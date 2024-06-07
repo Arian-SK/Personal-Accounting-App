@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>410</height>
+    <width>718</width>
+    <height>516</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -21,7 +21,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
+    <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -41,7 +41,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>6</number>
+       <number>0</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -680,6 +680,11 @@ QComboBox::focus{
         </item>
         <item row="5" column="1" colspan="8">
          <widget class="QLabel" name="labelExceptionIncome">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
           <property name="styleSheet">
            <string notr="true">QLabel {
   color:rgb(255, 0, 0);
@@ -1276,7 +1281,7 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
         <string>Search</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_9">
-        <item row="0" column="0">
+        <item row="2" column="0">
          <widget class="QPushButton" name="buttonBackFromSearch">
           <property name="minimumSize">
            <size>
@@ -1315,60 +1320,8 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tabCategories">
-       <attribute name="title">
-        <string>Categories</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_6">
-        <item row="0" column="0" colspan="2">
-         <widget class="QListView" name="listViewCategories">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="autoFillBackground">
-           <bool>true</bool>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color:rgba(0,0,0,20%);</string>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Plain</enum>
-          </property>
-         </widget>
-        </item>
         <item row="2" column="1">
-         <widget class="QLineEdit" name="lineNewCategory">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLineEdit {
-	color: rgb(56, 56, 56);
-	color: rgb(255,255,255);
-  	border-radius: 8px;
-  	padding: 5px 15px;
-  	background-color:#383838
-}
-
-QLineEdit:hover {
-  border: 1px solid #e0e4e7;
-
-}
-
-QLineEdit::focus{
-  border: 1px solid #e0e4e7;
-}</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QPushButton" name="buttonCategorySubmit">
+         <widget class="QPushButton" name="buttonSearchSubmit">
           <property name="minimumSize">
            <size>
             <width>40</width>
@@ -1406,6 +1359,84 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
+        <item row="0" column="0" colspan="2">
+         <widget class="QListView" name="listViewSearch">
+          <property name="styleSheet">
+           <string notr="true">background-color:rgba(0,0,0,20%);</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="2">
+         <widget class="QLineEdit" name="lineSearch">
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+	color: rgb(56, 56, 56);
+	color: rgb(255,255,255);
+  	border-radius: 8px;
+  	padding: 5px 15px;
+  	background-color:#383838
+}
+
+QLineEdit:hover {
+  border: 1px solid #e0e4e7;
+
+}
+
+QLineEdit::focus{
+  border: 1px solid #e0e4e7;
+}</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tabCategories">
+       <attribute name="title">
+        <string>Categories</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="lineNewCategory">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+	color: rgb(56, 56, 56);
+	color: rgb(255,255,255);
+  	border-radius: 8px;
+  	padding: 5px 15px;
+  	background-color:#383838
+}
+
+QLineEdit:hover {
+  border: 1px solid #e0e4e7;
+
+}
+
+QLineEdit::focus{
+  border: 1px solid #e0e4e7;
+}</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLabel" name="labelExceptionCategory">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">color: rgb(255, 0, 0);</string>
+          </property>
+          <property name="text">
+           <string>lable exception handling</string>
+          </property>
+         </widget>
+        </item>
         <item row="2" column="0">
          <widget class="QLabel" name="labelNewCategory">
           <property name="font">
@@ -1424,21 +1455,6 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
           <property name="text">
            <string>new category:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="QLabel" name="labelExceptionCategory">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">color: rgb(255, 0, 0);</string>
-          </property>
-          <property name="text">
-           <string>lable exception handling</string>
           </property>
          </widget>
         </item>
@@ -1481,6 +1497,63 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
+        <item row="0" column="0" colspan="2">
+         <widget class="QListView" name="listViewCategories">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color:rgba(0,0,0,20%);</string>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Plain</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QPushButton" name="buttonCategorySubmit">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+color: #333;
+border: 1px solid #555;
+border-radius: 20px;
+border-style: outset;
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1, stop: 0 #fff, stop: 1 #888
+);
+padding: 5px;
+}
+
+QPushButton:hover {
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1.35, stop: 0 #fff, stop: 1 #bbb
+);
+}</string>
+          </property>
+          <property name="text">
+           <string>Submit</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="tabReports">
@@ -1488,7 +1561,7 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
         <string>Reports</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_10">
-        <item row="0" column="0">
+        <item row="1" column="0">
          <widget class="QPushButton" name="buttonBackFromReports">
           <property name="minimumSize">
            <size>
@@ -1527,6 +1600,13 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
+        <item row="0" column="0">
+         <widget class="QListView" name="listViewReports">
+          <property name="styleSheet">
+           <string notr="true">background-color:rgba(0,0,0,20%);</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="tabSettings">
@@ -1534,6 +1614,32 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
         <string>Settings</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_8">
+        <item row="1" column="0" colspan="4">
+         <spacer name="horizontalSpacer_8">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="11" colspan="3">
+         <spacer name="horizontalSpacer_7">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
         <item row="0" column="16">
          <widget class="QPushButton" name="buttonMute">
           <property name="minimumSize">
@@ -1567,8 +1673,8 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
-        <item row="1" column="0" colspan="4">
-         <spacer name="horizontalSpacer_8">
+        <item row="1" column="10">
+         <spacer name="horizontalSpacer_9">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -1580,18 +1686,23 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </spacer>
         </item>
-        <item row="1" column="11" colspan="3">
-         <spacer name="horizontalSpacer_7">
+        <item row="0" column="0" colspan="15">
+         <widget class="QSlider" name="sliderVolume">
+          <property name="styleSheet">
+           <string notr="true">  QSlider{background-color:rgba(0,0,0, 40% );
+  border-radius: 8px;
+  padding: 5px 15px;}
+
+QSlider:hover {
+  border: 1px solid #e0e4e7;}</string>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
+         </widget>
         </item>
         <item row="1" column="16">
          <widget class="QPushButton" name="buttonChangeTheme">
@@ -1632,39 +1743,8 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
-        <item row="0" column="0" colspan="15">
-         <widget class="QSlider" name="sliderVolume">
-          <property name="styleSheet">
-           <string notr="true">  QSlider{background-color:rgba(0,0,0, 40% );
-  border-radius: 8px;
-  padding: 5px 15px;}
-
-QSlider:hover {
-  border: 1px solid #e0e4e7;}</string>
-          </property>
-          <property name="maximum">
-           <number>100</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="6">
          <spacer name="horizontalSpacer_11">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="10">
-         <spacer name="horizontalSpacer_9">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -1797,47 +1877,8 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
-        <item row="2" column="2">
-         <widget class="QPushButton" name="buttonBackFromSettings">
-          <property name="minimumSize">
-           <size>
-            <width>40</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Impact</family>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton {
-color: #333;
-border: 1px solid #555;
-border-radius: 20px;
-border-style: outset;
-background: qradialgradient(
-cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
-radius: 1, stop: 0 #fff, stop: 1 #888
-);
-padding: 5px;
-}
-
-QPushButton:hover {
-background: qradialgradient(
-cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
-radius: 1.35, stop: 0 #fff, stop: 1 #bbb
-);
-}</string>
-          </property>
-          <property name="text">
-           <string>Main Menu</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="9">
-         <widget class="QPushButton" name="buttonInstagram">
+        <item row="2" column="8">
+         <widget class="QPushButton" name="buttonTwitter">
           <property name="minimumSize">
            <size>
             <width>40</width>
@@ -1869,8 +1910,8 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
-        <item row="2" column="8">
-         <widget class="QPushButton" name="buttonTwitter">
+        <item row="2" column="9">
+         <widget class="QPushButton" name="buttonInstagram">
           <property name="minimumSize">
            <size>
             <width>40</width>
@@ -1935,15 +1976,8 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tabProfile">
-       <attribute name="title">
-        <string>Profile</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_7">
-        <item row="0" column="0">
-         <widget class="QPushButton" name="buttonBackFromProfile">
+        <item row="2" column="0">
+         <widget class="QPushButton" name="buttonBackFromSettings">
           <property name="minimumSize">
            <size>
             <width>40</width>
@@ -1983,6 +2017,366 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tabProfile">
+       <attribute name="title">
+        <string>Profile</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_7">
+        <item row="5" column="4">
+         <widget class="QPushButton" name="buttonDelete">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+color: red;
+border: 1px solid #555;
+border-radius: 20px;
+border-style: outset;
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1, stop: 0 #fff, stop: 1 #888
+);
+padding: 5px;
+}
+
+QPushButton:hover {
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1.35, stop: 0 #fff, stop: 1 #bbb
+);
+}</string>
+          </property>
+          <property name="text">
+           <string>Delete account</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="3" colspan="4">
+         <widget class="QLineEdit" name="linePassword">
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+	color: rgb(56, 56, 56);
+	color: rgb(255,255,255);
+  	border-radius: 8px;
+  	padding: 5px 15px;
+  	background-color:#383838
+}
+</string>
+          </property>
+          <property name="echoMode">
+           <enum>QLineEdit::Normal</enum>
+          </property>
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="4">
+         <spacer name="horizontalSpacer_20">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="5" column="3">
+         <spacer name="horizontalSpacer_17">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="5">
+         <spacer name="horizontalSpacer_22">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="3" column="2">
+         <widget class="QLabel" name="labelEmail">
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+  background-color:rgba(0,0,0, 20% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>Email:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="2">
+         <widget class="QPushButton" name="buttonBackFromProfile">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+color: #333;
+border: 1px solid #555;
+border-radius: 20px;
+border-style: outset;
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1, stop: 0 #fff, stop: 1 #888
+);
+padding: 5px;
+}
+
+QPushButton:hover {
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1.35, stop: 0 #fff, stop: 1 #bbb
+);
+}</string>
+          </property>
+          <property name="text">
+           <string>Main Menu</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QComboBox" name="comboProfiles">
+          <property name="styleSheet">
+           <string notr="true">QComboBox {
+	color: rgb(56, 56, 56);
+	color: rgb(255,255,255);
+  	border-radius: 1px;
+  	padding: 5px 15px;
+  	background-color:#383838
+}
+
+QComboBox::hover {
+  border: 1px solid #e0e4e7;
+
+}
+
+QComboBox::focus{
+  border: 1px solid #e0e4e7;
+}</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="3" colspan="4">
+         <widget class="QLineEdit" name="lineEmail">
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+	color: rgb(56, 56, 56);
+	color: rgb(255,255,255);
+  	border-radius: 8px;
+  	padding: 5px 15px;
+  	background-color:#383838
+}
+</string>
+          </property>
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="6">
+         <spacer name="horizontalSpacer_21">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLabel" name="labelUsername">
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+  background-color:rgba(0,0,0, 20% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>Username:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="6">
+         <widget class="QPushButton" name="buttonChange">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+color: #333;
+border: 1px solid #555;
+border-radius: 20px;
+border-style: outset;
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1, stop: 0 #fff, stop: 1 #888
+);
+padding: 5px;
+}
+
+QPushButton:hover {
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1.35, stop: 0 #fff, stop: 1 #bbb
+);
+}</string>
+          </property>
+          <property name="text">
+           <string>Change</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="3" colspan="4">
+         <widget class="QLineEdit" name="lineUsername">
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+	color: rgb(56, 56, 56);
+	color: rgb(255,255,255);
+  	border-radius: 8px;
+  	padding: 5px 15px;
+  	background-color:#383838
+}
+</string>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="4">
+         <widget class="QLabel" name="labelProfilePic">
+          <property name="maximumSize">
+           <size>
+            <width>226</width>
+            <height>198</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+  background-color:rgba(0,0,0, 20% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QLabel" name="labelPassword">
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+  background-color:rgba(0,0,0, 20% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>Password:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3" colspan="4">
+         <widget class="QLabel" name="labelExceptionProfile">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+  color:rgb(255, 0, 0);
+  background-color:rgba(0,0,0, 20% );
+  padding: 5px 15px;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>Exception handling label</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -1992,7 +2386,7 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>640</width>
+     <width>718</width>
      <height>18</height>
     </rect>
    </property>
