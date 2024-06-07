@@ -6,124 +6,29 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
-    <height>600</height>
+    <width>610</width>
+    <height>720</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>450</width>
-    <height>600</height>
+    <width>610</width>
+    <height>720</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="0">
-    <widget class="QLabel" name="labelLname">
+   <item row="10" column="0" colspan="5">
+    <widget class="QCheckBox" name="checkBoxTerms">
      <property name="font">
       <font>
        <pointsize>12</pointsize>
       </font>
      </property>
-     <property name="styleSheet">
-      <string notr="true">QLabel {
-  background-color:rgba( 255, 255, 255, 10% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
-}
-</string>
-     </property>
      <property name="text">
-      <string>Last name:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="labelEmail">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QLabel {
-  background-color:rgba( 255, 255, 255, 10% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
-}
-</string>
-     </property>
-     <property name="text">
-      <string>Email:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="labelFname">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QLabel {
-  background-color:rgba( 255, 255, 255, 10% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
-}
-
-  </string>
-     </property>
-     <property name="text">
-      <string>First name:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="1" colspan="7">
-    <widget class="QLineEdit" name="lineConfirmPass">
-     <property name="styleSheet">
-      <string notr="true">QLineEdit {
-  border-radius: 8px;
-  padding: 5px 15px;
-}
-
-QLineEdit:hover {
-  border: 1px solid #e0e4e7;
-
-}
-
-QLineEdit::focus{
-  border: 1px solid #e0e4e7;
-}</string>
-     </property>
-     <property name="echoMode">
-      <enum>QLineEdit::Password</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="labelPass">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QLabel {
-  background-color:rgba( 255, 255, 255, 10% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
-}
-</string>
-     </property>
-     <property name="text">
-      <string>Password:</string>
+      <string>I agree to the terms of services</string>
      </property>
     </widget>
    </item>
@@ -148,277 +53,14 @@ QLineEdit::focus{
      </property>
     </widget>
    </item>
-   <item row="9" column="0" colspan="5">
-    <widget class="QCheckBox" name="checkBoxTerms">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>I agree to the terms of services</string>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="0" colspan="5">
-    <widget class="QLabel" name="labelException">
-     <property name="font">
-      <font>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(255, 0, 0);</string>
-     </property>
-     <property name="text">
-      <string>exception handling label</string>
-     </property>
-    </widget>
-   </item>
-   <item row="15" column="0" colspan="4">
-    <widget class="QLabel" name="labelLogin">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>already have an account?</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="labelUsername">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QLabel {
-  background-color:rgba( 255, 255, 255, 10% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
-}
-</string>
-     </property>
-     <property name="text">
-      <string>Username:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
-    <widget class="QLabel" name="labelConfirmPass">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QLabel {
-  background-color:rgba( 255, 255, 255, 10% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
-}
-</string>
-     </property>
-     <property name="text">
-      <string>Confirm Password:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1" colspan="7">
-    <widget class="QLineEdit" name="linePass">
-     <property name="styleSheet">
-      <string notr="true">QLineEdit {
-  border-radius: 8px;
-  padding: 5px 15px;
-}
-
-QLineEdit:hover {
-  border: 1px solid #e0e4e7;
-
-}
-
-QLineEdit::focus{
-  border: 1px solid #e0e4e7;
-}</string>
-     </property>
-     <property name="echoMode">
-      <enum>QLineEdit::Password</enum>
-     </property>
-     <property name="placeholderText">
-      <string>XXX@123</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1" colspan="7">
-    <widget class="QLineEdit" name="lineEmail">
-     <property name="styleSheet">
-      <string notr="true">QLineEdit {
-  border-radius: 8px;
-  padding: 5px 15px;
-}
-
-QLineEdit:hover {
-  border: 1px solid #e0e4e7;
-
-}
-
-QLineEdit::focus{
-  border: 1px solid #e0e4e7;
-}</string>
-     </property>
-     <property name="placeholderText">
-      <string>XXX@gmail.com/XXX@yahoo.com</string>
-     </property>
-     <property name="cursorMoveStyle">
-      <enum>Qt::LogicalMoveStyle</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0">
-    <widget class="QLabel" name="labelCity">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QLabel {
-  background-color:rgba( 255, 255, 255, 10% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
-}
-</string>
-     </property>
-     <property name="text">
-      <string>City:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1" colspan="7">
-    <widget class="QLineEdit" name="linePnumber">
-     <property name="styleSheet">
-      <string notr="true">QLineEdit {
-  border-radius: 8px;
-  padding: 5px 15px;
-}
-
-QLineEdit:hover {
-  border: 1px solid #e0e4e7;
-
-}
-
-QLineEdit::focus{
-  border: 1px solid #e0e4e7;
-}</string>
-     </property>
-     <property name="placeholderText">
-      <string>09XXXXXXXXX</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1" colspan="7">
-    <widget class="QLineEdit" name="lineFname">
-     <property name="whatsThis">
-      <string/>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QLineEdit {
-  border-radius: 8px;
-  padding: 5px 15px;
-}
-
-QLineEdit:hover {
-  border: 1px solid #e0e4e7;
-
-}
-
-QLineEdit::focus{
-  border: 1px solid #e0e4e7;
-}</string>
-     </property>
-     <property name="placeholderText">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="3" colspan="3">
-    <widget class="QComboBox" name="comboMonth">
+   <item row="9" column="7" colspan="2">
+    <widget class="QComboBox" name="comboYear">
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>0</height>
+       <height>30</height>
       </size>
      </property>
-     <item>
-      <property name="text">
-       <string>January</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>February</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>March</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>April</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>May</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>June</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>July</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>August</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>September</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>October</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>November</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>December</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="8" column="6" colspan="2">
-    <widget class="QComboBox" name="comboYear">
      <item>
       <property name="text">
        <string>2005</string>
@@ -851,7 +493,330 @@ QLineEdit::focus{
      </item>
     </widget>
    </item>
-   <item row="15" column="6" colspan="2">
+   <item row="0" column="1" colspan="8">
+    <widget class="QLineEdit" name="lineFname">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="whatsThis">
+      <string/>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit {
+  border-radius: 8px;
+  padding: 5px 15px;
+}
+
+QLineEdit:hover {
+  border: 1px solid #e0e4e7;
+
+}
+
+QLineEdit::focus{
+  border: 1px solid #e0e4e7;
+}</string>
+     </property>
+     <property name="placeholderText">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1" colspan="8">
+    <widget class="QLineEdit" name="lineUsername">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit {
+  border-radius: 8px;
+  padding: 5px 15px;
+}
+
+QLineEdit:hover {
+  border: 1px solid #e0e4e7;
+
+}
+
+QLineEdit::focus{
+  border: 1px solid #e0e4e7;
+}</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1" colspan="8">
+    <widget class="QLineEdit" name="lineLname">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit {
+  border-radius: 8px;
+  padding: 5px 15px;
+}
+
+QLineEdit:hover {
+  border: 1px solid #e0e4e7;
+
+}
+
+QLineEdit::focus{
+  border: 1px solid #e0e4e7;
+}</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="8">
+    <widget class="QPushButton" name="buttonToggleEcho">
+     <property name="minimumSize">
+      <size>
+       <width>40</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+color: #333;
+border: 1px solid #555;
+border-radius: 20px;
+border-style: outset;
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1, stop: 0 #fff, stop: 1 #888
+);
+padding: 5px;
+}
+
+QPushButton:hover {
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1.35, stop: 0 #fff, stop: 1 #bbb
+);
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1" colspan="8">
+    <widget class="QLineEdit" name="lineEmail">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit {
+  border-radius: 8px;
+  padding: 5px 15px;
+}
+
+QLineEdit:hover {
+  border: 1px solid #e0e4e7;
+
+}
+
+QLineEdit::focus{
+  border: 1px solid #e0e4e7;
+}</string>
+     </property>
+     <property name="placeholderText">
+      <string>XXX@gmail.com/XXX@yahoo.com</string>
+     </property>
+     <property name="cursorMoveStyle">
+      <enum>Qt::LogicalMoveStyle</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0" colspan="9">
+    <widget class="QLabel" name="labelPassHint">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>600</width>
+       <height>200</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color:rgba(0,0,0,40%);</string>
+     </property>
+     <property name="text">
+      <string>password hint</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1" colspan="8">
+    <widget class="QLineEdit" name="linePnumber">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit {
+  border-radius: 8px;
+  padding: 5px 15px;
+}
+
+QLineEdit:hover {
+  border: 1px solid #e0e4e7;
+
+}
+
+QLineEdit::focus{
+  border: 1px solid #e0e4e7;
+}</string>
+     </property>
+     <property name="placeholderText">
+      <string>09XXXXXXXXX</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1" colspan="8">
+    <widget class="QLineEdit" name="lineCity">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit {
+  border-radius: 8px;
+  padding: 5px 15px;
+}
+
+QLineEdit:hover {
+  border: 1px solid #e0e4e7;
+
+}
+
+QLineEdit::focus{
+  border: 1px solid #e0e4e7;
+}</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="1" colspan="8">
+    <widget class="QLineEdit" name="lineConfirmPass">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit {
+  border-radius: 8px;
+  padding: 5px 15px;
+}
+
+QLineEdit:hover {
+  border: 1px solid #e0e4e7;
+
+}
+
+QLineEdit::focus{
+  border: 1px solid #e0e4e7;
+}</string>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="3" colspan="4">
+    <widget class="QComboBox" name="comboMonth">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>30</height>
+      </size>
+     </property>
+     <item>
+      <property name="text">
+       <string>January</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>February</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>March</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>April</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>May</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>June</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>July</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>August</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>September</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>October</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>November</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>December</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="16" column="8">
     <widget class="QPushButton" name="buttonLogin">
      <property name="minimumSize">
       <size>
@@ -892,28 +857,7 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
      </property>
     </widget>
    </item>
-   <item row="8" column="0">
-    <widget class="QLabel" name="labelDate">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QLabel {
-  background-color:rgba( 255, 255, 255, 10% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
-}
-</string>
-     </property>
-     <property name="text">
-      <string>Date of Birth:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="6" colspan="2">
+   <item row="11" column="8">
     <widget class="QPushButton" name="buttonSignUp">
      <property name="minimumSize">
       <size>
@@ -960,8 +904,178 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
      </property>
     </widget>
    </item>
-   <item row="8" column="1" colspan="2">
+   <item row="0" column="0">
+    <widget class="QLabel" name="labelFname">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+  background-color:rgba( 255, 255, 255, 10% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+
+  </string>
+     </property>
+     <property name="text">
+      <string>First name:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="labelPass">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+  background-color:rgba( 255, 255, 255, 10% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+     </property>
+     <property name="text">
+      <string>Password:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="labelLname">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+  background-color:rgba( 255, 255, 255, 10% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+     </property>
+     <property name="text">
+      <string>Last name:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="labelUsername">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+  background-color:rgba( 255, 255, 255, 10% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+     </property>
+     <property name="text">
+      <string>Username:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="16" column="0" colspan="4">
+    <widget class="QLabel" name="labelLogin">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>already have an account?</string>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="0" colspan="5">
+    <widget class="QLabel" name="labelException">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(255, 0, 0);</string>
+     </property>
+     <property name="text">
+      <string>exception handling label</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="labelConfirmPass">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+  background-color:rgba( 255, 255, 255, 10% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+     </property>
+     <property name="text">
+      <string>Confirm Password:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1" colspan="7">
+    <widget class="QLineEdit" name="linePass">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLineEdit {
+  border-radius: 8px;
+  padding: 5px 15px;
+}
+
+QLineEdit:hover {
+  border: 1px solid #e0e4e7;
+
+}
+
+QLineEdit::focus{
+  border: 1px solid #e0e4e7;
+}</string>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
+     </property>
+     <property name="placeholderText">
+      <string>XXX@123</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1" colspan="2">
     <widget class="QComboBox" name="comboDay">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>30</height>
+      </size>
+     </property>
      <item>
       <property name="text">
        <string>1</string>
@@ -1119,70 +1233,70 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
      </item>
     </widget>
    </item>
-   <item row="1" column="1" colspan="7">
-    <widget class="QLineEdit" name="lineLname">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
+   <item row="9" column="0">
+    <widget class="QLabel" name="labelDate">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">QLineEdit {
+      <string notr="true">QLabel {
+  background-color:rgba( 255, 255, 255, 10% );
   border-radius: 8px;
   padding: 5px 15px;
-}
-
-QLineEdit:hover {
   border: 1px solid #e0e4e7;
-
 }
-
-QLineEdit::focus{
-  border: 1px solid #e0e4e7;
-}</string>
+</string>
+     </property>
+     <property name="text">
+      <string>Date of Birth:</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="1" colspan="7">
-    <widget class="QLineEdit" name="lineUsername">
+   <item row="4" column="0">
+    <widget class="QLabel" name="labelEmail">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="styleSheet">
-      <string notr="true">QLineEdit {
+      <string notr="true">QLabel {
+  background-color:rgba( 255, 255, 255, 10% );
   border-radius: 8px;
   padding: 5px 15px;
-}
-
-QLineEdit:hover {
   border: 1px solid #e0e4e7;
-
 }
-
-QLineEdit::focus{
-  border: 1px solid #e0e4e7;
-}</string>
+</string>
+     </property>
+     <property name="text">
+      <string>Email:</string>
      </property>
     </widget>
    </item>
-   <item row="7" column="1" colspan="7">
-    <widget class="QLineEdit" name="lineCity">
+   <item row="8" column="0">
+    <widget class="QLabel" name="labelCity">
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="styleSheet">
-      <string notr="true">QLineEdit {
+      <string notr="true">QLabel {
+  background-color:rgba( 255, 255, 255, 10% );
   border-radius: 8px;
   padding: 5px 15px;
-}
-
-QLineEdit:hover {
   border: 1px solid #e0e4e7;
-
 }
-
-QLineEdit::focus{
-  border: 1px solid #e0e4e7;
-}</string>
+</string>
+     </property>
+     <property name="text">
+      <string>City:</string>
      </property>
     </widget>
    </item>
-   <item row="16" column="7">
+   <item row="17" column="8">
     <widget class="QPushButton" name="buttonMute">
      <property name="minimumSize">
       <size>
