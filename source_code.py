@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import * #to import every tools from QtWidgets
 from PyQt6.QtCore import QUrl, QStringListModel #to define path
-from PyQt6.QtGui import QIcon, QKeySequence #for icons
+from PyQt6.QtGui import QIcon, QKeySequence, QDesktopServices
 from PyQt6 import uic # for loading ui seperate from source code(qt designer)
 from PyQt6.QtMultimedia import QSoundEffect #for soundtracks
 import sys
@@ -73,7 +73,22 @@ class MainApp(QMainWindow):
         self.listViewCategories.setModel(self.model)
         self.listViewCategories.setEditTriggers(QListView.EditTrigger.NoEditTriggers)
 
+        #others:
+        self.buttonMute.setIcon(QIcon(project_path + "//resources//sound.ico"))
+        self.buttonInstagram.setIcon(QIcon(project_path + "//resources//Instagram Icon.ico"))
+        self.buttonTelegram.setIcon(QIcon(project_path + "//resources//Telegram Icon.ico"))
+        self.buttonTwitter.setIcon(QIcon(project_path + "//resources//Twitter Icon.ico"))
+        self.light_theme_on = False
+        self.dark_theme_on = False
+        self.star_theme_on = True
+
+        # set initial volume value
+        self.sliderVolume.setValue(50)
+        self.update_volume(50)
+
         #signal handling:
+
+            #Main Menu:
         self.buttonRegCost.clicked.connect(self.go_to_CostsTab)
         self.buttonRegIncome.clicked.connect(self.go_to_IncomeTab)
         self.buttonSettings.clicked.connect(self.go_to_SettingsTab)
@@ -81,8 +96,13 @@ class MainApp(QMainWindow):
         self.buttonReports.clicked.connect(self.go_to_ReportsTab)
         self.buttonCategories.clicked.connect(self.go_to_CategoriesTab)
         self.buttonProfile.clicked.connect(self.go_to_ProfileTab)
-        self.buttonIncomeSubmit.clicked.connect(self.check)
+            #Income:
+        self.buttonIncomeSubmit.clicked.connect(self.check_Income_inputs)
+        self.labelExceptionIncome.setVisible(False)
+            #Categories:
         self.buttonCategorySubmit.clicked.connect(self.addCategory)
+        self.update_list_view()
+            #back buttons:
         self.buttonBackFromIncome.clicked.connect(self.go_to_MainMenu)
         self.buttonBackFromCategories.clicked.connect(self.go_to_MainMenu)
         self.buttonBackFromProfile.clicked.connect(self.go_to_MainMenu)
@@ -90,11 +110,24 @@ class MainApp(QMainWindow):
         self.buttonBackFromCosts.clicked.connect(self.go_to_MainMenu)
         self.buttonBackFromSearch.clicked.connect(self.go_to_MainMenu)
         self.buttonBackFromReports.clicked.connect(self.go_to_MainMenu)
+            #Cost:
+        self.buttonCostSubmit.clicked.connect(self.check_Cost_inputs)
+        self.labelExceptionCost.setVisible(False)
+            #setting:
+        self.buttonMute.clicked.connect(windowLogin.play_mute_background)
+        self.sliderVolume.valueChanged.connect(self.update_volume)
+        self.buttonChangeTheme.clicked.connect(self.change_theme)
+        self.buttonAbout.clicked.connect(self.show_message_about)
+        self.buttonDonate.clicked.connect(self.open_link_donation)
+        self.buttonInstagram.clicked.connect(self.open_link_instagram)
+        self.buttonTelegram.clicked.connect(self.open_link_telegram)
+        self.buttonTwitter.clicked.connect(self.open_link_twitter)
         self.tabWidget.tabBar().hide()
         
         #exception handling:
         self.labelExceptionCategory.setVisible(False)
 
+    #main menu tab:
     def go_to_MainMenu(self):
         self.tabWidget.setCurrentIndex(0)
 
@@ -120,23 +153,35 @@ class MainApp(QMainWindow):
         self.tabWidget.setCurrentIndex(7)
 
     #income tab:
-    def reset_income_inputs(self):
+    def reset_Income_inputs(self):
         self.lineIncome.setText('')
         self.lineIncomeDate.setText('')
         self.lineIncomeDetails.setText('')
         self.lineIncomeSource.setText('')
     
-    def check(self):
-        if self.check_Income == False:    
+    def check_Income_inputs(self):
+        if self.check_Income() == False:
+            windowLogin.play_wrong()
+            self.labelExceptionIncome.setVisible(True)
+            self.labelExceptionIncome.setText('invalid input for income')
             return
-        if self.check_Income == False:
+        else:
+            self.labelExceptionIncome.setVisible(False)
+            self.labelExceptionIncome.setText('')
+        if self.check_Income_Date() == False:
+            windowLogin.play_wrong()
+            self.labelExceptionIncome.setVisible(True)
+            self.labelExceptionIncome.setText('invalid date')
             return
-        if self.check_Income == False:
-            return
+        else:
+            self.labelExceptionIncome.setVisible(False)
+            self.labelExceptionIncome.setText('')
+
+        self.save_Income_results()
 
     def check_Income(self):
         valid_Income = r'^\d+(\.\d+)?$'
-        if re.match(valid_Income, self.lineIncome.text()):
+        if re.match(valid_Income, self.lineIncome.text()):   
             return True
         else:
             return False
@@ -148,16 +193,48 @@ class MainApp(QMainWindow):
         else:
             return False
 
-    def check_Income_Source(self):
-        source = self.comboIncomeSource.currentText()
-        pass
-
     def save_Income_results(self):
         pass
 
-    #Cost:
+    #Cost tab:
+    def check_Cost_inputs(self):
+        if self.check_Cost() == False:
+            windowLogin.play_wrong()
+            self.labelExceptionCost.setVisible(True)
+            self.labelExceptionCost.setText('invalid input for cost')    
+            return
+        else:
+            self.labelExceptionCost.setVisible(False)
+            self.labelExceptionCost.setText('') 
+        if self.check_Cost_Date() == False:
+            windowLogin.play_wrong()
+            self.labelExceptionCost.setVisible(True)
+            self.labelExceptionCost.setText('invalid date') 
+            return
+        else:
+            self.labelExceptionCost.setVisible(False)
+            self.labelExceptionCost.setText('') 
 
-    #Categories:
+        self.save_Cost_results()
+
+    def check_Cost(self):
+        valid_Cost = r'^\d+(\.\d+)?$'
+        if re.match(valid_Cost, self.lineCost.text()):
+            return True
+        else:
+            return False
+
+    def check_Cost_Date(self):
+        valid_Cost_Date = r'^\d{4}/\d{2}/\d{2}$'
+        if re.match(valid_Cost_Date, self.lineCostDate.text()):
+            return True
+        else:
+            return False
+
+    def save_Cost_results(self):
+        pass
+
+    #Categories tab:
     def addCategory(self):
         Category = self.lineNewCategory.text()
         if Category.isalpha() and len(Category) <= 15:
@@ -168,6 +245,7 @@ class MainApp(QMainWindow):
             return
         if New_Category and self.comboIncomeSource.findText(New_Category) == -1:
             self.comboIncomeSource.addItem(New_Category)
+            self.comboCostSource.addItem(New_Category)
             self.lineNewCategory.setText('')
             self.update_list_view()
             self.labelExceptionCategory.setVisible(False)
@@ -181,6 +259,54 @@ class MainApp(QMainWindow):
     def update_list_view(self):
         items = [self.comboIncomeSource.itemText(i) for i in range(self.comboIncomeSource.count())]
         self.model.setStringList(items)
+
+    #settings:
+    def change_theme(self):
+        if self.star_theme_on:
+            self.light_theme_on = True
+            self.star_theme_on = False
+            path = light_theme_path
+            self.labelTheme.setText('Light')
+
+        elif self.light_theme_on:
+            self.light_theme_on = False
+            self.dark_theme_on = True
+            path = dark_theme_path
+            self.labelTheme.setText('Dark')
+
+        elif self.dark_theme_on:
+            self.star_theme_on = True
+            self.dark_theme_on = False
+            path = star_theme_path
+            self.labelTheme.setText('Stars')
+        
+        self.labelPic.setStyleSheet(path)
+        
+    def show_message_about(self):
+        msg_box = QMessageBox()
+        msg_box.setIcon(QMessageBox.Icon.Information)
+        msg_box.setWindowTitle('About')
+        msg_box.setText('made by Erfan Ghasemian and Arian Saeed Kondori')
+        msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
+        msg_box.exec()
+
+    def update_volume(self, value):
+        self.labelVolumeLevel.setText("Volume: " + str(value))
+        backgroundSound.soundtrack.setVolume(value / 100.0)
+
+    def open_link_donation(self):
+        QDesktopServices.openUrl(QUrl('https://developer.paypal.com/'))
+
+    def open_link_instagram(self):
+        QDesktopServices.openUrl(QUrl('https://www.instagram.com/'))
+    
+    def open_link_telegram(self):
+        QDesktopServices.openUrl(QUrl('https://telegram.org/'))
+    
+    def open_link_twitter(self):
+        QDesktopServices.openUrl(QUrl('https://twitter.com/'))
+
+
 
 #sign up ui:        
 class SignUp(QWidget):
@@ -205,7 +331,7 @@ class SignUp(QWidget):
         #signal handling:
         self.buttonSignUp.clicked.connect(self.check)
         self.buttonLogin.clicked.connect(self.open_login_page)
-        self.buttonMute.clicked.connect(self.play_mute_background)
+        self.buttonMute.clicked.connect(windowLogin.play_mute_background)
         self.lineCity.textChanged.connect(self.change_text)
         self.buttonSignUp.setShortcut("Return")
 
@@ -231,18 +357,6 @@ class SignUp(QWidget):
     def open_login_page(self):
         windowLogin.show()
         windowSignUp.close() 
-
-    def play_mute_background(self):
-        if backgroundSound.IsMuted():
-            backgroundSound.Mute(False)
-            self.buttonMute.setIcon(QIcon(project_path + "//resources//sound.ico"))
-            windowSignUp.buttonMute.setIcon(QIcon(project_path + "//resources//sound.ico"))
-            self.wrong_sound_isMuted = False
-        else:
-            backgroundSound.Mute(True)
-            self.buttonMute.setIcon(QIcon(project_path + "//resources//mute sound.ico"))
-            windowSignUp.buttonMute.setIcon(QIcon(project_path + "//resources//mute sound.ico"))
-            self.wrong_sound_isMuted = True
 
     def play_wrong(self):
         if self.wrong_sound_isMuted == False:
@@ -289,7 +403,7 @@ class SignUp(QWidget):
         self.add_memeber()
         self.reset_inputs()
         windowSignUp.close()
-        windowMain.show()
+        windowLogin.show()
 
     def reset_inputs(self):
         self.lineFname.setText('')
@@ -644,12 +758,14 @@ class LoginPage(QWidget):
             backgroundSound.Mute(False)
             self.buttonMute.setIcon(QIcon(project_path + "//resources//sound.ico"))
             windowSignUp.buttonMute.setIcon(QIcon(project_path + "//resources//sound.ico"))
+            windowMain.buttonMute.setIcon(QIcon(project_path + "//resources//sound.ico"))
             self.wrong_sound_isMuted = False
             SignUp.wrong_sound_isMuted = False
         else:
             backgroundSound.Mute(True)
             self.buttonMute.setIcon(QIcon(project_path + "//resources//mute sound.ico"))
             windowSignUp.buttonMute.setIcon(QIcon(project_path + "//resources//mute sound.ico"))
+            windowMain.buttonMute.setIcon(QIcon(project_path + "//resources//mute sound.ico"))
             self.wrong_sound_isMuted = True
             SignUp.wrong_sound_isMuted = True
 
