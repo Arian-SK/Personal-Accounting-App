@@ -107,7 +107,12 @@ class SignUp(QWidget):
             return
         if self.check_date() == False:
             return
-        
+        if self.checkBoxTerms.isChecked() == False:
+            self.labelException.setText('you have to agree with our TOS')
+            return
+        else:
+            self.labelException.setText('')
+
         self.add_memeber()
         self.reset_inputs()
         windowSignUp.close()
@@ -200,7 +205,25 @@ class SignUp(QWidget):
             padding: 5px 15px;
             border: 1px solid #e0e4e7;
         """)
-            return True
+            df = pd.read_excel(project_path + '//database//members_info.xlsx')
+            if int(pnumber) in df['phone number'].values:
+                self.labelException.setText('phone number already in use')
+                self.labelPnumber.setStyleSheet("""
+                background-color:rgba( 255, 255, 255, 10% );
+                border-radius: 8px;
+                padding: 5px 15px;
+                border: 1px solid #ff0000;
+                """)
+                return False
+            else:
+                self.labelException.setText('')
+                self.labelPnumber.setStyleSheet("""
+                background-color:rgba( 255, 255, 255, 10% );
+                border-radius: 8px;
+                padding: 5px 15px;
+                border: 1px solid #e0e4e7;
+                """)
+                return True
         else:
             self.labelException.setText('invalid phone number')
             self.labelPnumber.setStyleSheet("""
@@ -213,7 +236,7 @@ class SignUp(QWidget):
 
     def check_email(self):
         email = self.lineEmail.text()
-        valid_email = r'^[a-zA-Z0-9]+@(gmail|yahoo)\.com$'
+        valid_email = r'^[a-zA-Z0-9._%+-]+@(gmail|yahoo)\.com$'
         if re.match(valid_email, email):
             self.labelException.setText('')
             self.labelEmail.setStyleSheet("""
@@ -222,9 +245,27 @@ class SignUp(QWidget):
             padding: 5px 15px;
             border: 1px solid #e0e4e7;
         """)
-            return True
+            df = pd.read_excel(project_path + '//database//members_info.xlsx')
+            if email in df['email'].values:
+                self.labelException.setText('email already in use')
+                self.labelEmail.setStyleSheet("""
+                background-color:rgba( 255, 255, 255, 10% );
+                border-radius: 8px;
+                padding: 5px 15px;
+                border: 1px solid #ff0000;
+                """)
+                return False
+            else:
+                self.labelException.setText('')
+                self.labelEmail.setStyleSheet("""
+                background-color:rgba( 255, 255, 255, 10% );
+                border-radius: 8px;
+                padding: 5px 15px;
+                border: 1px solid #e0e4e7;
+                """)
+                return True
         else:
-            self.labelException.setText('Invalid email')
+            self.labelException.setText('invalid email')
             self.labelEmail.setStyleSheet("""
             background-color:rgba( 255, 255, 255, 10% );
             border-radius: 8px;
@@ -246,7 +287,7 @@ class SignUp(QWidget):
         """)
             return True
         else:
-            self.labelException.setText('Invalid password')
+            self.labelException.setText('invalid password')
             self.labelPass.setStyleSheet("""
             background-color:rgba( 255, 255, 255, 10% );
             border-radius: 8px;
@@ -265,7 +306,25 @@ class SignUp(QWidget):
             padding: 5px 15px;
             border: 1px solid #e0e4e7;
         """)
-            return True
+            df = pd.read_excel(project_path + '//database//members_info.xlsx')
+            if username in df['username'].values:
+                self.labelException.setText('username taken')
+                self.labelUsername.setStyleSheet("""
+                background-color:rgba( 255, 255, 255, 10% );
+                border-radius: 8px;
+                padding: 5px 15px;
+                border: 1px solid #ff0000;
+                """)
+                return False
+            else:
+                self.labelException.setText('')
+                self.labelUsername.setStyleSheet("""
+                background-color:rgba( 255, 255, 255, 10% );
+                border-radius: 8px;
+                padding: 5px 15px;
+                border: 1px solid #e0e4e7;
+                """)
+                return True
         else:
             self.labelException.setText("invalid username")
             self.labelUsername.setStyleSheet("""
@@ -402,7 +461,7 @@ class LoginPage(QWidget):
         self.labelPic.setStyleSheet(starBackgroundPath)
         self.labelPic.lower()
 
-        #exception handling labelL:
+        #exception handling label:
         self.labelException.setVisible(False)
         self.attempts = 0
 
@@ -413,7 +472,8 @@ class LoginPage(QWidget):
         self.buttonMute.clicked.connect(self.play_mute_background)
 
     def open_passForgot(self,*arg, **kwargs):
-        pass
+        windowLogin.close()
+        windowPassRecovery.show()
 
     def open_signUp_page(self):
         windowSignUp.show()
@@ -445,10 +505,6 @@ class LoginPage(QWidget):
                 """)
                 self.lock()
                 return
-
-            
-            # df = pd.read_excel(project_path + '//database//members_info.xlsx') # can also index sheet by name or fetch all sheets
-            # mylist = df['username'].tolist()
 
             if re.match(valid_password, password):
                 self.labelException.setVisible(False)
@@ -535,6 +591,69 @@ class LoginPage(QWidget):
             self.buttonMute.setIcon(QIcon(project_path + "//resources//mute sound.ico"))
             windowSignUp.buttonMute.setIcon(QIcon(project_path + "//resources//mute sound.ico"))
             
+class PassRecovery(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        #ui/tile/icon setup:
+        uic.loadUi(project_path + "//PasswordRecoveryPage.ui", self)
+        self.setWindowTitle('Recovery')
+        self.setWindowIcon(QIcon(project_path + "//resources//login icon.ico"))
+        
+        #background image setup:
+        self.labelPic = QLabel(self)
+        self.labelPic.resize(16777215, 16777215)
+        self.labelPic.setStyleSheet(starBackgroundPath)  
+        self.labelPic.lower()
+
+        #signal handling:
+        self.labelException.setVisible(False)
+        self.buttonVia.clicked.connect(self.send_via)
+        self.buttonBack.clicked.connect(self.go_back)
+        self.buttonSend.clicked.connect(self.check)
+
+    def send_via(self):
+        self.labelException.setVisible(False)
+        self.lineInput.setText('')
+        if self.labelInput.text() == 'Email:':
+            self.labelInput.setText('Phone number:')
+            self.buttonVia.setText('Send via Email')
+        else:
+            self.labelInput.setText('Email:')
+            self.buttonVia.setText('Send via SMS')
+            
+    def check(self):
+        self.labelException.setVisible(True)
+        if self.labelInput.text() == 'Email:':
+            if self.check_email():
+                self.labelException.setText('we have sent a message to your email address seccessfully')
+            else:
+                self.labelException.setText('email not found')
+        else:
+            if self.check_pnumber():
+                self.labelException.setText('we have sent a SMS to your number seccessfully')
+            else:
+                self.labelException.setText('phone number not found')
+
+    def check_pnumber(self):
+        pnumber = self.lineInput.text()
+        df = pd.read_excel(project_path + '//database//members_info.xlsx')
+        if int(pnumber) in df['phone number'].values:
+            return True
+        else:
+            return False
+    
+    def check_email(self):
+        email = self.lineInput.text()
+        df = pd.read_excel(project_path + '//database//members_info.xlsx')
+        if email in df['email'].values:
+            return True
+        else:
+            return False
+
+    def go_back(self):
+        windowPassRecovery.close()
+        windowLogin.show()
 
 effect = QSoundEffect()
 #main:
@@ -551,6 +670,7 @@ if __name__ == '__main__':
     windowLogin = LoginPage()
     windowMain = MainApp()
     windowSignUp = SignUp()
+    windowPassRecovery = PassRecovery()
     
     #show window(s):
     windowLogin.show()
