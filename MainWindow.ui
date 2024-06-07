@@ -19,6 +19,9 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color:rgba(0,0,0,20%);</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
@@ -35,13 +38,13 @@
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgba(0,0,0,20%);</string>
+       <string notr="true">background-color: rgba(0,0,0,0%);</string>
       </property>
       <property name="tabShape">
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>5</number>
+       <number>7</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -346,6 +349,54 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
         <string>Income</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3">
+        <item row="4" column="1">
+         <widget class="QComboBox" name="comboIncomeType">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QComboBox {
+	color: rgb(56, 56, 56);
+	color: rgb(255,255,255);
+  	border-radius: 1px;
+  	padding: 5px 15px;
+  	background-color:#383838
+}
+
+QComboBox::hover {
+  border: 1px solid #e0e4e7;
+
+}
+
+QComboBox::focus{
+  border: 1px solid #e0e4e7;
+}</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>Cash</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Check</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Digital</string>
+           </property>
+          </item>
+         </widget>
+        </item>
         <item row="5" column="0">
          <widget class="QPushButton" name="buttonBackFromIncome">
           <property name="minimumSize">
@@ -385,8 +436,240 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
-        <item row="1" column="1" colspan="10">
-         <widget class="QLineEdit" name="lineIncomeDate">
+        <item row="2" column="8">
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="3" column="1" colspan="10">
+         <widget class="QLineEdit" name="lineIncomeDetails">
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+	color: rgb(56, 56, 56);
+	color: rgb(255,255,255);
+  	border-radius: 8px;
+  	padding: 5px 15px;
+  	background-color:#383838
+}
+
+QLineEdit:hover {
+  border: 1px solid #e0e4e7;
+
+}
+
+QLineEdit::focus{
+  border: 1px solid #e0e4e7;
+}</string>
+          </property>
+          <property name="maxLength">
+           <number>100</number>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1" colspan="8">
+         <widget class="QLabel" name="labelExceptionIncome">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+  color:rgb(255, 0, 0);
+  background-color:rgba(0,0,0, 20% );
+  padding: 5px 15px;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>exception handling label</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="9" colspan="2">
+         <widget class="QPushButton" name="buttonIncomeSubmit">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+color: #333;
+border: 1px solid #555;
+border-radius: 20px;
+border-style: outset;
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1, stop: 0 #fff, stop: 1 #888
+);
+padding: 5px;
+}
+
+QPushButton:hover {
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1.35, stop: 0 #fff, stop: 1 #bbb
+);
+}</string>
+          </property>
+          <property name="text">
+           <string>Submit</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="10">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="7">
+         <spacer name="horizontalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="3">
+         <spacer name="horizontalSpacer_15">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="4">
+         <spacer name="horizontalSpacer_12">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="labelIncomeDetails">
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+  background-color:rgba(0,0,0, 20% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>Details:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="9">
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="5">
+         <spacer name="horizontalSpacer_6">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="2" column="6">
+         <spacer name="horizontalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="labelIncomeType">
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+  background-color:rgba(0,0,0, 20% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>Type:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="10">
+         <widget class="QLineEdit" name="lineIncome">
           <property name="styleSheet">
            <string notr="true">QLineEdit {
 	color: rgb(56, 56, 56);
@@ -406,6 +689,85 @@ QLineEdit::focus{
 }</string>
           </property>
          </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="labelIncome">
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+  background-color:rgba(0,0,0, 20% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>Income:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="labelDateIncome">
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+  background-color:rgba(0,0,0, 20% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>Date:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="labelIncomeSource">
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+  background-color:rgba(0,0,0, 20% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>Source:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <spacer name="horizontalSpacer_16">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
         <item row="2" column="1">
          <widget class="QComboBox" name="comboIncomeSource">
@@ -460,8 +822,8 @@ QComboBox::focus{
           </item>
          </widget>
         </item>
-        <item row="0" column="1" colspan="10">
-         <widget class="QLineEdit" name="lineIncome">
+        <item row="1" column="1" colspan="10">
+         <widget class="QLineEdit" name="lineIncomeDate">
           <property name="styleSheet">
            <string notr="true">QLineEdit {
 	color: rgb(56, 56, 56);
@@ -481,365 +843,6 @@ QLineEdit::focus{
 }</string>
           </property>
          </widget>
-        </item>
-        <item row="3" column="1" colspan="10">
-         <widget class="QLineEdit" name="lineIncomeDetails">
-          <property name="styleSheet">
-           <string notr="true">QLineEdit {
-	color: rgb(56, 56, 56);
-	color: rgb(255,255,255);
-  	border-radius: 8px;
-  	padding: 5px 15px;
-  	background-color:#383838
-}
-
-QLineEdit:hover {
-  border: 1px solid #e0e4e7;
-
-}
-
-QLineEdit::focus{
-  border: 1px solid #e0e4e7;
-}</string>
-          </property>
-          <property name="maxLength">
-           <number>100</number>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="labelIncomeType">
-          <property name="font">
-           <font>
-            <family>Impact</family>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-  background-color:rgba(0,0,0, 20% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
-}
-</string>
-          </property>
-          <property name="text">
-           <string>Type:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="QComboBox" name="comboIncomeType">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QComboBox {
-	color: rgb(56, 56, 56);
-	color: rgb(255,255,255);
-  	border-radius: 1px;
-  	padding: 5px 15px;
-  	background-color:#383838
-}
-
-QComboBox::hover {
-  border: 1px solid #e0e4e7;
-
-}
-
-QComboBox::focus{
-  border: 1px solid #e0e4e7;
-}</string>
-          </property>
-          <item>
-           <property name="text">
-            <string>Cash</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Check</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Digital</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="labelDateIncome">
-          <property name="font">
-           <font>
-            <family>Impact</family>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-  background-color:rgba(0,0,0, 20% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
-}
-</string>
-          </property>
-          <property name="text">
-           <string>Date:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="labelIncomeDetails">
-          <property name="font">
-           <font>
-            <family>Impact</family>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-  background-color:rgba(0,0,0, 20% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
-}
-</string>
-          </property>
-          <property name="text">
-           <string>Details:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="labelIncome">
-          <property name="font">
-           <font>
-            <family>Impact</family>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-  background-color:rgba(0,0,0, 20% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
-}
-</string>
-          </property>
-          <property name="text">
-           <string>Income:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="labelIncomeSource">
-          <property name="font">
-           <font>
-            <family>Impact</family>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-  background-color:rgba(0,0,0, 20% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
-}
-</string>
-          </property>
-          <property name="text">
-           <string>Source:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="3">
-         <spacer name="horizontalSpacer_15">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="5" column="1" colspan="8">
-         <widget class="QLabel" name="labelExceptionIncome">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-  color:rgb(255, 0, 0);
-  background-color:rgba(0,0,0, 20% );
-  padding: 5px 15px;
-}
-</string>
-          </property>
-          <property name="text">
-           <string>exception handling label</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="9">
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="6">
-         <spacer name="horizontalSpacer_5">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="10">
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="8">
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="5" column="9" colspan="2">
-         <widget class="QPushButton" name="buttonIncomeSubmit">
-          <property name="minimumSize">
-           <size>
-            <width>40</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Impact</family>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QPushButton {
-color: #333;
-border: 1px solid #555;
-border-radius: 20px;
-border-style: outset;
-background: qradialgradient(
-cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
-radius: 1, stop: 0 #fff, stop: 1 #888
-);
-padding: 5px;
-}
-
-QPushButton:hover {
-background: qradialgradient(
-cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
-radius: 1.35, stop: 0 #fff, stop: 1 #bbb
-);
-}</string>
-          </property>
-          <property name="text">
-           <string>Submit</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="5">
-         <spacer name="horizontalSpacer_6">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="7">
-         <spacer name="horizontalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="4">
-         <spacer name="horizontalSpacer_12">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="2" column="2">
-         <spacer name="horizontalSpacer_16">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
         </item>
        </layout>
       </widget>
@@ -2442,7 +2445,81 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
         <string>Profile</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_7">
-        <item row="5" column="4">
+        <item row="7" column="2">
+         <widget class="QLabel" name="labelPnumber">
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+  background-color:rgba(0,0,0, 20% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}</string>
+          </property>
+          <property name="text">
+           <string>Phone number:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="5">
+         <widget class="QPushButton" name="buttonDeleteAllSubs">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+color: red;
+border: 1px solid #555;
+border-radius: 20px;
+border-style: outset;
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1, stop: 0 #fff, stop: 1 #888
+);
+padding: 5px;
+}
+
+QPushButton:hover {
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1.35, stop: 0 #fff, stop: 1 #bbb
+);
+}</string>
+          </property>
+          <property name="text">
+           <string>Delete all submissions</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="3" colspan="4">
+         <widget class="QLineEdit" name="linePnumber">
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+	color: rgb(56, 56, 56);
+	color: rgb(255,255,255);
+  	border-radius: 8px;
+  	padding: 5px 15px;
+  	background-color:#383838
+}
+</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="4">
          <widget class="QPushButton" name="buttonDelete">
           <property name="minimumSize">
            <size>
@@ -2481,7 +2558,7 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
-        <item row="4" column="3" colspan="4">
+        <item row="6" column="3" colspan="4">
          <widget class="QLineEdit" name="linePassword">
           <property name="styleSheet">
            <string notr="true">QLineEdit {
@@ -2501,32 +2578,6 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
-        <item row="0" column="4">
-         <spacer name="horizontalSpacer_20">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="5" column="3">
-         <spacer name="horizontalSpacer_17">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
         <item row="0" column="5">
          <spacer name="horizontalSpacer_22">
           <property name="orientation">
@@ -2540,29 +2591,7 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </spacer>
         </item>
-        <item row="3" column="2">
-         <widget class="QLabel" name="labelEmail">
-          <property name="font">
-           <font>
-            <family>Impact</family>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-  background-color:rgba(0,0,0, 20% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
-}
-</string>
-          </property>
-          <property name="text">
-           <string>Email:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="2">
+        <item row="8" column="2">
          <widget class="QPushButton" name="buttonBackFromProfile">
           <property name="minimumSize">
            <size>
@@ -2601,6 +2630,67 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
+        <item row="5" column="2">
+         <widget class="QLabel" name="labelEmail">
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+  background-color:rgba(0,0,0, 20% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>Email:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QLabel" name="labelUsername">
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+  background-color:rgba(0,0,0, 20% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>Username:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="3" colspan="4">
+         <widget class="QLineEdit" name="lineEmail">
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+	color: rgb(56, 56, 56);
+	color: rgb(255,255,255);
+  	border-radius: 8px;
+  	padding: 5px 15px;
+  	background-color:#383838
+}
+</string>
+          </property>
+          <property name="readOnly">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="2">
          <widget class="QComboBox" name="comboProfiles">
           <property name="styleSheet">
@@ -2623,23 +2713,6 @@ QComboBox::focus{
           </property>
          </widget>
         </item>
-        <item row="3" column="3" colspan="4">
-         <widget class="QLineEdit" name="lineEmail">
-          <property name="styleSheet">
-           <string notr="true">QLineEdit {
-	color: rgb(56, 56, 56);
-	color: rgb(255,255,255);
-  	border-radius: 8px;
-  	padding: 5px 15px;
-  	background-color:#383838
-}
-</string>
-          </property>
-          <property name="readOnly">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="6">
          <spacer name="horizontalSpacer_21">
           <property name="orientation">
@@ -2653,8 +2726,30 @@ QComboBox::focus{
           </property>
          </spacer>
         </item>
-        <item row="2" column="2">
-         <widget class="QLabel" name="labelUsername">
+        <item row="0" column="0" colspan="4">
+         <widget class="QLabel" name="labelProfilePic">
+          <property name="maximumSize">
+           <size>
+            <width>226</width>
+            <height>198</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+  background-color:rgba(0,0,0, 20% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="2">
+         <widget class="QLabel" name="labelPassword">
           <property name="font">
            <font>
             <family>Impact</family>
@@ -2671,11 +2766,28 @@ QComboBox::focus{
 </string>
           </property>
           <property name="text">
-           <string>Username:</string>
+           <string>Password:</string>
           </property>
          </widget>
         </item>
-        <item row="5" column="6">
+        <item row="4" column="3" colspan="4">
+         <widget class="QLineEdit" name="lineUsername">
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+	color: rgb(56, 56, 56);
+	color: rgb(255,255,255);
+  	border-radius: 8px;
+  	padding: 5px 15px;
+  	background-color:#383838
+}
+</string>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="6">
          <widget class="QPushButton" name="buttonChange">
           <property name="minimumSize">
            <size>
@@ -2714,67 +2826,6 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
-        <item row="2" column="3" colspan="4">
-         <widget class="QLineEdit" name="lineUsername">
-          <property name="styleSheet">
-           <string notr="true">QLineEdit {
-	color: rgb(56, 56, 56);
-	color: rgb(255,255,255);
-  	border-radius: 8px;
-  	padding: 5px 15px;
-  	background-color:#383838
-}
-</string>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" colspan="4">
-         <widget class="QLabel" name="labelProfilePic">
-          <property name="maximumSize">
-           <size>
-            <width>226</width>
-            <height>198</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-  background-color:rgba(0,0,0, 20% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
-}
-</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="2">
-         <widget class="QLabel" name="labelPassword">
-          <property name="font">
-           <font>
-            <family>Impact</family>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-  background-color:rgba(0,0,0, 20% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
-}
-</string>
-          </property>
-          <property name="text">
-           <string>Password:</string>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="3" colspan="4">
          <widget class="QLabel" name="labelExceptionProfile">
           <property name="font">
@@ -2792,6 +2843,130 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
           <property name="text">
            <string>Exception handling label</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLabel" name="labelFname">
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+  background-color:rgba(0,0,0, 20% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>First name</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="3" colspan="4">
+         <widget class="QLineEdit" name="lineFname">
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+	color: rgb(56, 56, 56);
+	color: rgb(255,255,255);
+  	border-radius: 8px;
+  	padding: 5px 15px;
+  	background-color:#383838
+}
+</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QLabel" name="labelLname">
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+  background-color:rgba(0,0,0, 20% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>Last Name</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="3" colspan="4">
+         <widget class="QLineEdit" name="lineLname">
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+	color: rgb(56, 56, 56);
+	color: rgb(255,255,255);
+  	border-radius: 8px;
+  	padding: 5px 15px;
+  	background-color:#383838
+}
+</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="4">
+         <spacer name="horizontalSpacer_20">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="8" column="3">
+         <widget class="QPushButton" name="buttonLogOut">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+color: red;
+border: 1px solid #555;
+border-radius: 20px;
+border-style: outset;
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1, stop: 0 #fff, stop: 1 #888
+);
+padding: 5px;
+}
+
+QPushButton:hover {
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1.35, stop: 0 #fff, stop: 1 #bbb
+);
+}</string>
+          </property>
+          <property name="text">
+           <string>Log out</string>
           </property>
          </widget>
         </item>
