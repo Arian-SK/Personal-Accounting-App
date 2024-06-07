@@ -6,6 +6,7 @@ from PyQt6.QtMultimedia import QSoundEffect #for soundtracks
 import sys
 import re #regex
 import time #cooldown
+from datetime import datetime, timedelta
 import os #to fine the path
 import shutil #delte account
 import pandas as pd #reading and writing excel
@@ -126,7 +127,12 @@ class MainApp(QMainWindow):
         self.buttonChange.clicked.connect(self.change_profile_details)
         self.lineEmail.setEnabled(False)
         self.linePassword.setEnabled(False)
+        self.lineFname.setEnabled(False)
+        self.lineLname.setEnabled(False)
+        self.linePnumber.setEnabled(False)
         self.buttonDelete.clicked.connect(self.delete_account)
+        self.buttonDeleteAllSubs.clicked.connect(self.delete_subs)
+        self.buttonLogOut.clicked.connect(self.log_out)
         
             #Income:
         self.buttonIncomeSubmit.clicked.connect(self.check_Income_inputs)
@@ -152,9 +158,34 @@ class MainApp(QMainWindow):
             #Report:
         self.load_excel_Incomes()
         self.load_excel_Costs()
+        self.buttonReportsSubmit.clicked.connect(self.perform_reports)
+        self.buttonGroupReports = QButtonGroup()
+        self.buttonGroupReports.addButton(self.radioReportsPastD)
+        self.buttonGroupReports.addButton(self.radioReportsPastM)
+        self.buttonGroupReports.addButton(self.radioReportsPastY)
+        self.buttonGroupReports.addButton(self.radioReportsNone)
+        self.radioReportsNone.setChecked(True)
+        self.buttonReportsRange.clicked.connect(self.get_integer_values2)
+        self.buttonReportsReset.clicked.connect(self.reset_reports)
+        self.first_range1 = 0
+        self.second_range2 = 0
 
             #Search:
         self.buttonSearchSubmit.clicked.connect(self.begin_search)
+        self.buttonGroupSearch1 = QButtonGroup()
+        self.buttonGroupSearch1.addButton(self.radioSearchIncomesOnly)
+        self.buttonGroupSearch1.addButton(self.radioSearchCostsOnly)
+        self.buttonGroupSearch1.addButton(self.radioSearchNone1)
+        self.radioSearchNone1.setChecked(True)
+        self.buttonGroupSearch2 = QButtonGroup()
+        self.buttonGroupSearch2.addButton(self.radioSearchPast1)
+        self.buttonGroupSearch2.addButton(self.radioSearchPast3)
+        self.buttonGroupSearch2.addButton(self.radioSearchNone2)
+        self.radioSearchNone2.setChecked(True)
+        self.buttonSearchRange.clicked.connect(self.get_integer_values)
+        self.buttonSearchReset.clicked.connect(self.reset_search)
+        self.firt_range = 0
+        self.second_range = 0
 
             #setting:
         self.buttonMute.clicked.connect(windowLogin.play_mute_background)
@@ -171,6 +202,7 @@ class MainApp(QMainWindow):
         self.labelExceptionCategory.setVisible(False)
         self.labelExceptionProfile.setVisible(False)
 
+    #reinitialize the class
     def reinit(self):
         self.__init__()
 
@@ -181,12 +213,21 @@ class MainApp(QMainWindow):
             user_row = df[(df['username'] == self.username)]
             email = str(user_row['email']).split()
             password = str(user_row['password']).split()
+            fname = str(user_row['first name']).split()
+            lname = str(user_row['last name']).split()
+            pnumber = str(user_row['phone number']).split()
             self.email = email[1]
             self.password = password[1]
+            self.fname = fname[1]
+            self.lname = lname[1]
+            self.pnumber = '0' + pnumber[1]
             self.lineEmail.setText(self.email)
             self.linePassword.setText(self.password)
             self.lineUsername.setText(self.username)
-    
+            self.lineFname.setText(self.fname)
+            self.lineLname.setText(self.lname)
+            self.linePnumber.setText(self.pnumber)
+
     def set_profile_pic(self):
         profile_name = self.comboProfiles.currentText()
         pixmap = QPixmap(project_path + '//resources//' + profile_name + '.jpg')
@@ -199,26 +240,38 @@ class MainApp(QMainWindow):
             #change
             self.lineEmail.setEnabled(True)
             self.linePassword.setEnabled(True)
+            self.lineFname.setEnabled(True)
+            self.lineLname.setEnabled(True)
+            self.linePnumber.setEnabled(True)
             self.buttonChange.setText('Submit')
         else:
             #submit
             self.lineEmail.setEnabled(False)
             self.linePassword.setEnabled(False)
+            self.lineFname.setEnabled(False)
+            self.lineLname.setEnabled(False)
+            self.linePnumber.setEnabled(False)
             self.buttonChange.setText('Change')
             self.check_changed_details()
 
     def check_changed_details(self):
         new_email = self.lineEmail.text()
         new_password = self.linePassword.text()
+        new_fname = self.lineFname.text()
+        new_lname = self.lineLname.text()
+        new_pnumber = self.linePnumber.text()
         valid_email = r'^[a-zA-Z0-9._%+-]+@(gmail|yahoo)\.com$'
         valid_password = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$'
+        valid_pnumber = r'^09\d{9}$'
+        valid_fname = r'^[a-zA-Z]+$'
+        valid_lname = r'^[a-zA-Z]+$'
         df = pd.read_excel(project_path + '//database//members_info.xlsx')
+        self.labelExceptionProfile.setText('')
         if new_email != self.email:
             if re.match(valid_email, new_email):
                 if new_email in df['email'].values:
                     self.labelExceptionProfile.setVisible(True)
                     self.labelExceptionProfile.setText('email already in use')
-                    return
                 else:
                     self.labelExceptionProfile.setVisible(False)
                     self.labelExceptionProfile.setText('')
@@ -226,11 +279,41 @@ class MainApp(QMainWindow):
         
         if new_password != self.password:
             if re.match(valid_password, new_password):
+                self.labelExceptionProfile.setVisible(False)
+                self.labelExceptionProfile.setText('')
                 self.save_changed_password(new_password)
+
             else:
                 self.labelExceptionProfile.setVisible(True)
-                self.labelExceptionProfile.setText('invalid password')
-                return
+                self.labelExceptionProfile.setText(str(self.labelExceptionProfile.text()) + ' invalid password')
+
+        if new_fname != self.fname:
+            if re.match(valid_fname, new_fname):
+                self.labelExceptionProfile.setVisible(False)
+                self.labelExceptionProfile.setText('')
+                self.save_changed_fname(new_fname)
+            else:
+                self.labelExceptionProfile.setVisible(True)
+                self.labelExceptionProfile.setText(str(self.labelExceptionProfile.text()) + ' invalid fname')
+        
+        if new_lname != self.lname:
+            if re.match(valid_lname, new_lname):
+                self.labelExceptionProfile.setVisible(False)
+                self.labelExceptionProfile.setText('')
+                self.save_changed_lname(new_lname)
+            else:
+                self.labelExceptionProfile.setVisible(True)
+                self.labelExceptionProfile.setText(str(self.labelExceptionProfile.text()) + ' invalid lname')
+
+        if new_pnumber != self.pnumber:
+            if re.match(valid_pnumber, new_pnumber):
+                if new_pnumber in df['phone number'].values:
+                    self.labelExceptionProfile.setVisible(True)
+                    self.labelExceptionProfile.setText(str(self.labelExceptionProfile.text()) + ' phone number already in use')
+                else:
+                    self.labelExceptionProfile.setVisible(False)
+                    self.labelExceptionProfile.setText('')
+                    self.save_changed_pnumber(new_email)
 
         self.load_user_profile()
 
@@ -244,6 +327,24 @@ class MainApp(QMainWindow):
         file_path = project_path + '//database//members_info.xlsx'
         df = pd.read_excel(project_path + '//database//members_info.xlsx')
         df.loc[df['username'] == self.username, 'password'] = new_password
+        df.to_excel(file_path, index=False)
+    
+    def save_changed_fname(self, new_fname):
+        file_path = project_path + '//database//members_info.xlsx'
+        df = pd.read_excel(project_path + '//database//members_info.xlsx')
+        df.loc[df['username'] == self.username, 'first name'] = new_fname
+        df.to_excel(file_path, index=False)
+
+    def save_changed_lname(self, new_lname):
+        file_path = project_path + '//database//members_info.xlsx'
+        df = pd.read_excel(project_path + '//database//members_info.xlsx')
+        df.loc[df['username'] == self.username, 'last name'] = new_lname
+        df.to_excel(file_path, index=False)
+
+    def save_changed_pnumber(self, new_pnumber):
+        file_path = project_path + '//database//members_info.xlsx'
+        df = pd.read_excel(project_path + '//database//members_info.xlsx')
+        df.loc[df['username'] == self.username, 'phone number'] = new_pnumber
         df.to_excel(file_path, index=False)
 
     def delete_account(self):
@@ -263,6 +364,56 @@ class MainApp(QMainWindow):
                 shutil.rmtree(user_folder_path)
             windowMain.close()
             windowLogin.show()
+        
+    def delete_subs(self):
+        reply = QMessageBox.question(
+        self, "Delete submissions", f"Are you sure you want to delete all the submissions ?",
+        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No
+        )
+        if reply == QMessageBox.StandardButton.Yes:
+            self.user_folder_path = project_path + '//database//reports//' + self.username
+            if os.path.isdir(self.user_folder_path):
+                shutil.rmtree(self.user_folder_path)
+                os_directory_path = self.user_folder_path
+                os.makedirs(os_directory_path, exist_ok=True)
+                self.make_incomes_excel()
+                self.make_costs_excel()
+                self.make_categories_excel()
+                self.reset_combo_source()
+                self.update_list_view_reports([],0)
+                self.update_list_view_category(0)
+
+    def make_incomes_excel(self):
+        df = pd.DataFrame(columns=['Income', 'Date', 'Source', 'Details', 'Type', 'submit date'])
+        file_path = self.user_folder_path + '//Incomes.xlsx'
+        df.to_excel(file_path, index=False, engine='openpyxl')
+
+    def make_costs_excel(self):
+        df = pd.DataFrame(columns=['Cost', 'Date', 'Source', 'Details', 'Type', 'submit date'])
+        file_path = self.user_folder_path + '//Costs.xlsx'
+        df.to_excel(file_path, index=False, engine='openpyxl')
+
+    def make_categories_excel(self):
+        df = pd.DataFrame(columns=['Categories', 'submit date'])
+        file_path = self.user_folder_path + '//Categories.xlsx'
+        df.to_excel(file_path, index=False, engine='openpyxl')
+    
+    def reset_combo_source(self):
+        default_items = ['Groceries', 'Refueling', 'Decorations', 'Installment']
+        self.comboIncomeSource.clear()
+        self.comboIncomeSource.addItems(default_items)
+        self.comboIncomeSource.setCurrentIndex(0)
+        self.comboCostSource.clear()
+        self.comboCostSource.addItems(default_items)
+        self.comboCostSource.setCurrentIndex(0)
+        self.comboReportsSource.clear()
+        self.comboReportsSource.addItems(default_items)
+        self.comboReportsSource.setCurrentIndex(0)
+        
+    def log_out(self):
+        print('logging out...')
+        windowMain.close()
+        windowLogin.show()
 
     #main menu tab:
     def go_to_MainMenu(self):
@@ -375,6 +526,8 @@ class MainApp(QMainWindow):
 
     #Submiting:
     def submit(self, Type):
+        current_time = time.localtime()
+        self.current_time = time.strftime('%Y/%m/%d', current_time)
         if Type == 'income':
             self.Income = self.lineIncome.text()
             self.IncomeDate = self.lineIncomeDate.text()
@@ -387,7 +540,8 @@ class MainApp(QMainWindow):
             "Date": [self.IncomeDate],
             "Source": [self.IncomeSource],
             "Details": [self.IncomeDetails],
-            "Type": [self.IncomeType]
+            "Type": [self.IncomeType],
+            "submit date": [self.current_time]
             }
             
             new_data = pd.DataFrame(info)
@@ -406,7 +560,8 @@ class MainApp(QMainWindow):
             "Date": [self.CostDate],
             "Source": [self.CostSource],
             "Details": [self.CostDetails],
-            "Type": [self.CostType]
+            "Type": [self.CostType],
+            "submit date": [self.current_time]
             }
 
             new_data = pd.DataFrame(info)
@@ -418,7 +573,8 @@ class MainApp(QMainWindow):
             self.new_category = category.capitalize()
 
             info = {
-                "Categories": [self.new_category]
+                "Categories": [self.new_category],
+                "submit date": [self.current_time]
             }
 
             new_data = pd.DataFrame(info)
@@ -469,6 +625,36 @@ class MainApp(QMainWindow):
     def begin_search(self):
         self.perform_search()
 
+    def reset_search(self):
+        self.radioSearchNone1.setChecked(True)
+        self.radioSearchNone2.setChecked(True)
+        self.first_range = 0
+        self.second_range = 0
+        self.labelSearchRange.setText('Range')
+
+    def get_integer_values(self):
+        # First dialog
+        first_value, ok1 = QInputDialog.getInt(None, "Input Dialog", "Enter first integer value:")
+        if not ok1:
+            QMessageBox.critical(None, "Error", "First input was cancelled.")
+            return
+        
+        while True:
+            # Second dialog
+            second_value, ok2 = QInputDialog.getInt(None, "Input Dialog", "Enter second integer value:")
+            if not ok2:
+                QMessageBox.critical(None, "Error", "Second input was cancelled.")
+                return
+            
+            if second_value > first_value:
+                break
+            else:
+                QMessageBox.warning(None, "Input Error", "Second value must be greater than the first value. Please try again.")
+        
+        self.labelSearchRange.setText('range: ' + str(first_value) + ' - ' + str(second_value))
+        self.first_range = first_value
+        self.second_range = second_value
+
     def perform_search(self):
         self.excel_path_income = project_path + '//database//reports//' + self.username + '//incomes.xlsx'
         self.excel_path_cost = project_path + '//database//reports//' + self.username + '//costs.xlsx'
@@ -476,22 +662,123 @@ class MainApp(QMainWindow):
 
         self.model_3.setStringList([''])
         self.results_combined = []
-        self.Search(self.excel_path_income)
-        self.Search(self.excel_path_cost)
-        self.Search(self.excel_path_categories)
+
+        #None1,None2
+        if self.radioSearchNone1.isChecked() and self.radioSearchNone2.isChecked():
+            if os.path.exists(self.excel_path_income):
+                self.Search(self.excel_path_income)
+            if os.path.exists(self.excel_path_cost):
+                self.Search(self.excel_path_cost)
+        
+        #None1,Past 24 hours
+        if self.radioSearchNone1.isChecked() and self.radioSearchPast1.isChecked():
+            if os.path.exists(self.excel_path_income):
+                self.Search(self.excel_path_income, 1)
+            if os.path.exists(self.excel_path_cost):
+                self.Search(self.excel_path_cost, 1)
+
+        #None1,Past 3 days
+        if self.radioSearchNone1.isChecked() and self.radioSearchPast3.isChecked():
+            if os.path.exists(self.excel_path_income):
+                self.Search(self.excel_path_income, 3)
+            if os.path.exists(self.excel_path_cost):
+                self.Search(self.excel_path_cost, 3)
+
+        #IncomesOnly,None2
+        if self.radioSearchIncomesOnly.isChecked() and self.radioSearchNone2.isChecked():
+            if os.path.exists(self.excel_path_income):
+                self.Search(self.excel_path_income)
+
+        #IncomesOnly, Past 24 hours
+        if self.radioSearchIncomesOnly.isChecked() and self.radioSearchPast1.isChecked():
+            if os.path.exists(self.excel_path_income):
+                self.Search(self.excel_path_income, 1)
+        
+        #IncomesOnly, Past 3 days
+        if self.radioSearchIncomesOnly.isChecked() and self.radioSearchPast3.isChecked():
+            if os.path.exists(self.excel_path_income):
+                self.Search(self.excel_path_income, 3)
+
+        #CostsOnly, None2
+        if self.radioSearchCostsOnly.isChecked() and self.radioSearchNone2.isChecked():
+            if os.path.exists(self.excel_path_cost):
+                self.Search(self.excel_path_cost)
+
+        #CostsOnly, Past 24 hours
+        if self.radioSearchCostsOnly.isChecked() and self.radioSearchPast1.isChecked():
+            if os.path.exists(self.excel_path_cost):
+                self.Search(self.excel_path_cost, 1)
+
+        #CostsOnly, Past 3 days
+        if self.radioSearchCostsOnly.isChecked() and self.radioSearchPast3.isChecked():
+            if os.path.exists(self.excel_path_cost):
+                self.Search(self.excel_path_cost, 3)
+        
         self.update_list_view_search(self.results_combined)
 
-    def Search(self, file_path):
+    def Search(self, file_path, time_range = ''):
         searched_string = self.lineSearch.text()
+        result = []
         if searched_string:
+            #search the key word:
             result = self.search_in_excel(file_path, searched_string)
             if result:
                 self.result_display = []
-                self.result_display.append("\n".join([str(row) for row in result]))
-                self.results_combined.append(self.result_display)
-            else:
-                #self.lineExceptionSearch.setText("No matching rows found.")
-                pass
+                new_results = []
+
+                #check if it's withing the past 24 hours:
+                if time_range == 1:
+                    for i in range(len(result)):
+                        current_time_str = result[i][1].strip("'Date: ")
+                        if self.is_within_past_days(current_time_str, 1):
+                            new_results.append(result[i])
+                    result = new_results
+
+                #check if it's withing the past 3 days:
+                elif time_range == 3:
+                    for i in range(len(result)):
+                        current_time_str = result[i][1].strip("'Date: ")
+                        if self.is_within_past_days(current_time_str, 3):
+                            new_results.append(result[i])
+                    result = new_results
+                
+                #money range check:
+                if self.second_range > 0:
+                    for i in range(len(result)):
+                        money = result[i][0].strip("'Income: ").strip("'Cost: ")
+                        if self.is_within_range(money):
+                            new_results.append(result[i])
+                    result = new_results
+                new_results = []
+
+                #if it's empty don't display, if not add \n to every element:
+                if len(result) > 0:
+                    for i in result:
+                        new_results.append(i)
+                        new_results.append('--------------------------------------')
+                    result = new_results
+                    self.result_display.append("\n".join([str(row) for row in result]))
+                    self.results_combined.append(self.result_display)
+
+    def is_within_range(self, money_str):
+        money = int(money_str)
+        return self.first_range < money < self.second_range
+
+    def is_within_past_days(self, date_str, past_days):
+        #Convert string to datetime object
+        date_obj = datetime.strptime(date_str, "%Y/%m/%d")
+        
+        #Get current time
+        current_time = datetime.now()
+        
+        # Calculate difference
+        difference = current_time - date_obj
+        
+        # Define timedelta for x days
+        Days = timedelta(days = past_days)
+
+        # Check if difference is less than x days
+        return difference < Days
 
     def search_in_excel(self, file_path, searched_string):
         workbook = load_workbook(file_path)
@@ -512,42 +799,64 @@ class MainApp(QMainWindow):
         for i in List:
             for j in i:
                 string_list.append(str(j).replace("'", "").replace('[','').replace(']','').replace(',','\n'))
-            string_list.append('--------------------------------------')
         self.model_3.setStringList(string_list)
 
     #Categories tab:
     def addCategory(self):
         Category = self.lineNewCategory.text()
+        valid_category = r'^[a-zA-Z]+$'
         if Category.isalpha() and len(Category) <= 15:
             New_Category = Category.capitalize()
         else:
             self.labelExceptionCategory.setVisible(True)
             self.labelExceptionCategory.setText('invalid Category')
             return
-        if New_Category and self.comboIncomeSource.findText(New_Category) == -1:
-            self.comboIncomeSource.addItem(New_Category)
-            self.comboCostSource.addItem(New_Category)
-            self.submit('category')
-            self.lineNewCategory.setText('')
-            self.update_list_view_category()
-            self.labelExceptionCategory.setVisible(False)
-            self.labelExceptionCategory.setText('')
-            return
+        if re.match(valid_category , New_Category):
+            if self.comboIncomeSource.findText(New_Category) == -1:
+                self.comboIncomeSource.addItem(New_Category)
+                self.comboCostSource.addItem(New_Category)
+                self.submit('category')
+                self.lineNewCategory.setText('')
+                self.update_list_view_category()
+                self.labelExceptionCategory.setVisible(False)
+                self.labelExceptionCategory.setText('')
+                return
+            else:
+                self.labelExceptionCategory.setVisible(True)
+                self.labelExceptionCategory.setText('Category already exists!')
+                return
         else:
             self.labelExceptionCategory.setVisible(True)
-            self.labelExceptionCategory.setText('invalid Category')
-            return
+            self.labelExceptionCategory.setText('only English characters are acceptable')
+            return 
     
-    def update_list_view_category(self):
-        items = [self.comboIncomeSource.itemText(i) for i in range(self.comboIncomeSource.count())]
-        self.model.setStringList(items)
+    def update_list_view_category(self, code = 1):
+        #code 0 is for clearing the view list
+        if code == 0:
+            self.model.setStringList([])
+        else:
+            items = [self.comboIncomeSource.itemText(i) for i in range(self.comboIncomeSource.count())]
+            self.model.setStringList(items)
+            self.comboReportsSource.addItems(items)
 
     #reports tab:
-    def update_list_view_reports(self, info):
-        string_list = self.model_2.stringList()
-        string_list.append(info)
-        string_list.append('--------------------------------------')
-        self.model_2.setStringList(string_list)
+    def reset_reports(self):
+        self.radioReportsNone.setChecked(True)
+        self.labelReportsRange.setText('')
+        self.first_range2 = 0
+        self.second_range2 = 0
+        self.comboReportsType.setCurrentText('Type(none)')
+        self.comboReportsSource.setCurrentText('Source(none)')
+        self.labelReportsRange.setText('Range')
+
+    def update_list_view_reports(self, info, code = 1):
+        if code == 0:
+            self.model_2.setStringList([])
+        else:
+            string_list = self.model_2.stringList()
+            string_list.append(info)
+            string_list.append('--------------------------------------')
+            self.model_2.setStringList(string_list)
 
     def load_excel_Incomes(self):
         file_path = project_path + "//database//reports//" + self.username + "//incomes.xlsx"
@@ -561,7 +870,8 @@ class MainApp(QMainWindow):
                 "Date": [incomes_list[i][1]],
                 "Source": [incomes_list[i][2]],
                 "Details": [incomes_list[i][3]],
-                "Type": [incomes_list[i][4]]
+                "Type": [incomes_list[i][4]],
+                "submit date": [incomes_list[i][5]]
                 }
                 mod_info = str(info).replace('[','').replace(']','').replace("'","").replace('}','').replace('{','').replace(', ','\n')
                 self.update_list_view_reports(mod_info)
@@ -579,12 +889,155 @@ class MainApp(QMainWindow):
                 "Date": [costs_list[i][1]],
                 "Source": [costs_list[i][2]],
                 "Details": [costs_list[i][3]],
-                "Type": [costs_list[i][4]]
+                "Type": [costs_list[i][4]],
+                "submit date": [costs_list[i][5]]
                 }
                 mod_info = str(info).replace('[','').replace(']','').replace("'","").replace('}','').replace('{','').replace(', ','\n')
                 self.update_list_view_reports(mod_info)
         else:
             return
+
+    def get_integer_values2(self):
+        first_value, ok1 = QInputDialog.getInt(None, "Input Dialog", "Enter first integer value:")
+        if not ok1:
+            QMessageBox.critical(None, "Error", "First input was cancelled.")
+            return
+        
+        while True:
+            # Second dialog
+            second_value, ok2 = QInputDialog.getInt(None, "Input Dialog", "Enter second integer value:")
+            if not ok2:
+                QMessageBox.critical(None, "Error", "Second input was cancelled.")
+                return
+            
+            if second_value > first_value:
+                break
+            else:
+                QMessageBox.warning(None, "Input Error", "Second value must be greater than the first value. Please try again.")
+        
+        self.labelReportsRange.setText('range: ' + str(first_value) + ' - ' + str(second_value))
+        self.first_range2 = first_value
+        self.second_range2 = second_value
+
+    def perform_reports(self):
+        self.excel_path_income = project_path + '//database//reports//' + self.username + '//incomes.xlsx'
+        self.excel_path_cost = project_path + '//database//reports//' + self.username + '//costs.xlsx'
+        self.excel_path_categories = project_path + '//database//reports//' + self.username + '//categories.xlsx'
+
+        self.model_2.setStringList([''])
+        self.results_combined = []
+
+        if self.radioReportsNone.isChecked():
+            self.filter_reports(self.excel_path_income)
+            self.filter_reports(self.excel_path_cost)
+
+        if self.radioReportsPastD.isChecked():
+            self.filter_reports(self.excel_path_income,'D')
+            self.filter_reports(self.excel_path_cost,'D')
+
+        if self.radioReportsPastM.isChecked():
+            self.filter_reports(self.excel_path_income,'M')
+            self.filter_reports(self.excel_path_cost,'M')
+
+        if self.radioReportsPastY.isChecked():
+            self.filter_reports(self.excel_path_income,'Y')
+            self.filter_reports(self.excel_path_cost,'Y')
+
+        self.update_list_view_reports_filtered(self.results_combined)
+        
+    def filter_reports(self, file_path, time_range = ''):
+        result = []
+        searched_string = ''
+        if self.comboReportsSource.currentText() != 'Source(none)':
+            searched_string = self.comboReportsSource.currentText()
+
+        if searched_string:
+            result = self.search_in_excel(file_path, searched_string)
+        else:
+            result = self.read_excel_to_list(file_path)
+
+        if result:
+            self.result_display = []
+            new_results = []
+        
+            if time_range == 'D':
+                for i in range(len(result)):
+                    current_time_str = result[i][1].strip("'Date: ")
+                    if self.is_within_past_days(current_time_str, 1):
+                        new_results.append(result[i])
+                result = new_results
+            elif time_range == 'M':
+                for i in range(len(result)):
+                    current_time_str = result[i][1].strip("'Date: ")
+                    if self.is_within_past_days(current_time_str, 30):
+                        new_results.append(result[i])
+                result = new_results
+            elif time_range == 'Y':
+                for i in range(len(result)):
+                    current_time_str = result[i][1].strip("'Date: ")
+                    if self.is_within_past_days(current_time_str, 365):
+                        new_results.append(result[i])
+                result = new_results
+            
+            new_results = []
+            if self.second_range2 > 0:
+                for i in range(len(result)):
+                    money = result[i][0].strip("'Income: ").strip("'Cost: ")
+                    if self.is_within_range2(money):
+                        new_results.append(result[i])
+                result = new_results
+            
+            new_results = []
+            if self.comboReportsType.currentText() != 'Type(none)':
+                Type = self.comboReportsType.currentText()
+                for i in range(len(result)):
+                    if Type in result[i][4]:
+                        new_results.append(result[i])
+                result = new_results
+            new_results = []
+
+            if len(result) > 0:
+                for i in result:
+                    new_results.append(i)
+                    new_results.append('--------------------------------------')
+                result = new_results
+                self.result_display.append("\n".join([str(row) for row in result]))
+                self.results_combined.append(self.result_display)
+
+    def read_excel_to_list(self, file_path):
+        try:
+            # Read the Excel file
+            df = pd.read_excel(file_path)
+            # Get column names
+            columns = list(df.columns)
+            # Initialize 2D list with column names
+            data = [columns]
+            # Iterate over each row
+            for _, row in df.iterrows():
+                # Create a list for the row
+                row_list = []
+                # Iterate over each column
+                for col in columns:
+                    # Construct element with column name and cell value
+                    element = f"{col}: {row[col]}"
+                    row_list.append(element)
+                # Append row list to the 2D list
+                data.append(row_list)
+            data.pop(0)
+            return data
+        except Exception as e:
+            print(f"Error reading Excel file: {e}")
+            return None
+
+    def is_within_range2(self, money):
+        return self.first_range1 < int(money) < self.second_range2
+
+    def update_list_view_reports_filtered(self, List):
+        string_list = self.model_2.stringList()
+        for i in List:
+            for j in i:
+                string_list.append(str(j).replace("'", "").replace('[','').replace(']','').replace(',','\n'))
+        self.model_2.setStringList(string_list)
 
     #settings:
     def change_theme(self):
@@ -631,6 +1084,7 @@ class MainApp(QMainWindow):
     
     def open_link_twitter(self):
         QDesktopServices.openUrl(QUrl('https://twitter.com/'))
+
 
 #sign up ui:        
 class SignUp(QWidget):
@@ -703,7 +1157,6 @@ class SignUp(QWidget):
     #function to check inputs:
     def check(self):
         self.labelException.setVisible(True)
-        
         if self.check_fname() == False:
             self.play_wrong()
             return
@@ -736,13 +1189,38 @@ class SignUp(QWidget):
             self.labelException.setText('you have to agree with our TOS')
             return
         else:
+            self.show_message_box()
+
+    def show_message_box(self):
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle("Choose an Option")
+        msg_box.setText("what do you want your security question be:")
+        
+        option1 = msg_box.addButton("city", QMessageBox.ButtonRole.AcceptRole)
+        option2 = msg_box.addButton("pet name", QMessageBox.ButtonRole.AcceptRole)
+        option3 = msg_box.addButton("favorite food", QMessageBox.ButtonRole.AcceptRole)
+
+        msg_box.exec()
+
+        clicked_button = msg_box.clickedButton()
+
+        if clicked_button == option1:
+            self.show_input_dialog("city")
+        elif clicked_button == option2:
+            self.show_input_dialog("pet name")
+        elif clicked_button == option3:
+            self.show_input_dialog("favorite food")
+
+    def show_input_dialog(self, option):
+        self.option = option
+        self.security_answer, ok = QInputDialog.getText(self, f"Input for {option}", f"Enter something for {option}:")
+        if ok and self.security_answer.isalpha():
             self.labelException.setText('')
             self.play_correct()
-
-        self.add_memeber()
-        self.reset_inputs()
-        windowSignUp.close()
-        windowLogin.show()
+            self.add_memeber()
+            self.reset_inputs()
+            windowSignUp.close()
+            windowLogin.show()
 
     def reset_inputs(self):
         self.lineFname.setText('')
@@ -764,8 +1242,10 @@ class SignUp(QWidget):
         username = self.lineUsername.text()
         city = self.lineCity.text()
         date = self.date
+        security_answer = self.security_answer
+        security_type = self.option
         memeber_info = {'first name': [fname], 'last name': [lname], 'phone number':[pnumber], 'username':[username],
-        'email':[email], 'password':[password], 'city':[city], 'date':[date]}
+        'email':[email], 'password':[password], 'city':[city], 'date':[date], 'security type':[security_type], 'security answer':[security_answer]}
 
         database_path = project_path + '//database//members_info.xlsx'
 
@@ -1186,12 +1666,69 @@ class LoginPage(QWidget):
             self.correct_sound.Play()
 
     def open_passForgot(self,*arg, **kwargs):
-        windowLogin.close()
-        windowPassRecovery.show()
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle("Recovery")
+        msg_box.setText("choose a recovery option:")
+        
+        option1 = msg_box.addButton("send message", QMessageBox.ButtonRole.AcceptRole)
+        option2 = msg_box.addButton("ask a question", QMessageBox.ButtonRole.AcceptRole)
+        option3 = msg_box.addButton("cancel", QMessageBox.ButtonRole.AcceptRole)
+        msg_box.exec()
+
+        clicked_button = msg_box.clickedButton()
+
+        if clicked_button == option1:
+            windowLogin.close()
+            windowPassRecovery.show()
+        elif clicked_button == option2:
+            self.show_message_recovery()
+        elif clicked_button == option3:
+            return
 
     def open_signUp_page(self):
         windowSignUp.show()
         windowLogin.close()
+    
+    def show_message_recovery(self):
+        username, ok = QInputDialog.getText(self, 'Username Input', 'Enter username:')
+        if not ok:
+            return
+
+        if not username:
+            QMessageBox.warning(self, 'Input Error', 'Please enter a username.')
+            return
+
+        try:
+            df = pd.read_excel(project_path + '//database//members_info.xlsx')
+        except Exception as e:
+            QMessageBox.critical(self, 'File Error', f'Error loading file: {e}')
+            return
+
+        user_row = df[df['username'] == username]
+        if user_row.empty:
+            QMessageBox.warning(self, 'Input Error', 'username not found.')
+        else:
+            self.username = username
+            self.security_type = user_row.iloc[0]['security type']
+            self.security_answer = user_row.iloc[0]['security answer']
+            self.check_security_answer()
+    
+    def check_security_answer(self):
+        answer, ok = QInputDialog.getText(self, 'Answer Input', 'Enter your answer for ' + str(self.security_type) + ':')
+        if not ok:
+            return
+        while(answer != self.security_answer):
+            QMessageBox.warning(self, 'Input Error', 'Invalid answer')
+            answer, ok = QInputDialog.getText(self, 'Answer Input', 'Enter your answer for ' + str(self.security_type) + ':')
+            if not ok:
+                break
+        else:
+            self.play_correct()
+            windowLogin.close()
+            self.reset_inputs()
+            windowMain.reinit()
+            windowMain.show()
+        return
 
     #function to check inputs:
     def check_login_input(self):
@@ -1230,23 +1767,17 @@ class LoginPage(QWidget):
                 padding: 5px 15px;
                 border: 1px solid #e0e4e7;
                 """)
+
                 if self.check_login(self.username, self.password):
-                    reply = QMessageBox.question(self, 'Scurity question', 'we will ask you a question for security reasons are you ready ?',
-                                         QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-                    if reply == QMessageBox.StandardButton.Yes:
-                        if self.check_security() == False:
-                            self.lock()
-                            return
-                        else:
-                            self.play_correct()
-                            windowLogin.close()
-                            self.reset_inputs()
-                            windowMain.reinit()
-                            windowMain.show()
-                    else:
-                        pass
+                    self.play_correct()
+                    windowLogin.close()
+                    self.reset_inputs()
+                    windowMain.reinit()
+                    windowMain.show()
                 else:
                     self.lock()
+                    self.play_wrong()
+                    return
             else:
                 self.labelException.setVisible(True)
                 self.labelException.setText('invalid password')
@@ -1262,58 +1793,6 @@ class LoginPage(QWidget):
                 
         else:
             self.countdown()
-
-    def check_security(self):
-        num = random.randint(1, 3)
-        if num == 1:
-            city, ok_pressed = QInputDialog.getText(self, 'Security question', 'Please enter the name of the city you were born:')
-            City = city.capitalize()
-            username = self.lineUsername.text()
-            df = pd.read_excel(project_path + '//database//members_info.xlsx')
-            try:
-                user_row = df[(df['username'] == username) & (df['city'] == City)]
-                if not user_row.empty:
-                    self.labelException.setText('')
-                    return True
-                else:
-                    self.labelException.setVisible(True)
-                    self.labelException.setText('incorrect')
-                    return False
-            except Exception as e:
-                print(e)
-                return False
-        if num == 2:
-            email, ok_pressed = QInputDialog.getText(self, 'Security question', 'Please enter your email:')
-            username = self.lineUsername.text()
-            df = pd.read_excel(project_path + '//database//members_info.xlsx')
-            try:
-                user_row = df[(df['username'] == username) & (df['email'] == email)]
-                if not user_row.empty:
-                    self.labelException.setText('')
-                    return True
-                else:
-                    self.labelException.setVisible(True)
-                    self.labelException.setText('incorrect')
-                    return False
-            except Exception as e:
-                print(e)
-                return False
-        if num == 3:
-            pnumber, ok_pressed = QInputDialog.getText(self, 'Security question', 'Please enter your phone number:')
-            username = self.lineUsername.text()
-            df = pd.read_excel(project_path + '//database//members_info.xlsx')
-            try:
-                user_row = df[(df['username'] == username) & (df['phone number'] == int(pnumber))]
-                if not user_row.empty:
-                    self.labelException.setText('')
-                    return True
-                else:
-                    self.labelException.setVisible(True)
-                    self.labelException.setText('incorrect')
-                    return False
-            except Exception as e:
-                print(e)
-                return False
 
     def check_login(self, username, password):
         try:
@@ -1333,7 +1812,10 @@ class LoginPage(QWidget):
                 return True
             else:
                 self.labelException.setVisible(True)
-                self.labelException.setText('password or username not found')
+                if username in df['username'].values():
+                    self.labelException.setText('password is incorrect (forgot your password ?)')
+                else:
+                    self.labelException.setText('username not found (you may want to sign up)')
                 return False
         except Exception as e:
             print(e)

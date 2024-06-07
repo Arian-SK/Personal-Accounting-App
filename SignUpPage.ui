@@ -55,6 +55,12 @@
    </item>
    <item row="9" column="7" colspan="2">
     <widget class="QComboBox" name="comboYear">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>30</height>
+      </size>
+     </property>
      <item>
       <property name="text">
        <string>2005</string>
@@ -489,6 +495,12 @@
    </item>
    <item row="0" column="1" colspan="8">
     <widget class="QLineEdit" name="lineFname">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
      <property name="whatsThis">
       <string/>
      </property>
@@ -514,6 +526,12 @@ QLineEdit::focus{
    </item>
    <item row="3" column="1" colspan="8">
     <widget class="QLineEdit" name="lineUsername">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit {
   border-radius: 8px;
@@ -536,7 +554,7 @@ QLineEdit::focus{
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>0</height>
+       <height>40</height>
       </size>
      </property>
      <property name="styleSheet">
@@ -591,6 +609,12 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
    </item>
    <item row="4" column="1" colspan="8">
     <widget class="QLineEdit" name="lineEmail">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit {
   border-radius: 8px;
@@ -643,6 +667,12 @@ QLineEdit::focus{
    </item>
    <item row="2" column="1" colspan="8">
     <widget class="QLineEdit" name="linePnumber">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit {
   border-radius: 8px;
@@ -665,6 +695,12 @@ QLineEdit::focus{
    </item>
    <item row="8" column="1" colspan="8">
     <widget class="QLineEdit" name="lineCity">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit {
   border-radius: 8px;
@@ -684,6 +720,12 @@ QLineEdit::focus{
    </item>
    <item row="7" column="1" colspan="8">
     <widget class="QLineEdit" name="lineConfirmPass">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit {
   border-radius: 8px;
@@ -709,7 +751,7 @@ QLineEdit::focus{
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>0</height>
+       <height>30</height>
       </size>
      </property>
      <item>
@@ -997,6 +1039,12 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
    </item>
    <item row="5" column="1" colspan="7">
     <widget class="QLineEdit" name="linePass">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit {
   border-radius: 8px;
@@ -1022,6 +1070,12 @@ QLineEdit::focus{
    </item>
    <item row="9" column="1" colspan="2">
     <widget class="QComboBox" name="comboDay">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>30</height>
+      </size>
+     </property>
      <item>
       <property name="text">
        <string>1</string>
