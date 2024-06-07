@@ -6,7 +6,8 @@ from PyQt6.QtMultimedia import QSoundEffect #for soundtracks
 import sys
 import re #regex
 import time #cooldown
-import os
+import os #to fine the path
+import pandas as pd
 
 #finding path to project directory:
 my_path = os.path.abspath(os.path.dirname(__file__))
@@ -47,6 +48,7 @@ class SignUp(QWidget):
         #ui/tile/icon setup:
         uic.loadUi(project_path + "//SignUpPage.ui", self)
         self.setWindowIcon(QIcon(project_path + "//resources//signup icon.ico"))
+        self.buttonMute.setIcon(QIcon(project_path + "//resources//sound.ico"))
         self.setWindowTitle('Sign Up')
 
         #background image setup:
@@ -61,7 +63,24 @@ class SignUp(QWidget):
         #signal handling:
         self.buttonSignUp.clicked.connect(self.check)
         self.buttonLogin.clicked.connect(self.open_login_page)
-    
+        self.buttonMute.clicked.connect(self.play_mute_background)
+        self.lineCity.textChanged.connect(self.change_text)
+
+        #attributes:
+        self.city_list = ['Tehran', 'ُSari', 'Karaj', 'Babol', 'Esfahan',
+         'Shiraz', 'Yazd', 'Tabriz', 'Kerman', 'Qom', 'Mashhad', 'Ahvaz',
+          'Zahedan', 'Kashan', 'Arak', 'Zanjan', 'Ardabil', 'Rasht', 'Amirkola',
+           'Hamedan', 'Gorgan', 'Eslamshahr', 'Bandar Abbas', 'Oromieh']
+        
+        #auto completer:
+        self.completer = QCompleter(self.city_list)
+        self.lineCity.setCompleter(self.completer)
+        
+    def change_text(self):
+        city = self.lineCity.text()
+        new_city = city.capitalize()
+        self.lineCity.setText(new_city)
+
     def open_login_page(self):
         windowLogin.show()
         windowSignUp.close()
@@ -69,40 +88,127 @@ class SignUp(QWidget):
     #function to check inputs:
     def check(self):
         self.labelException.setVisible(True)
-        if self.check_date() == False:
-            return False
+        
         if self.check_fname() == False:
-            return False
+            return
         if self.check_lname() == False:
-            return False
+            return
         if self.check_pnumber() == False:
-            return False
+            return
+        if self.check_username() == False:
+            return
         if self.check_email() == False:
-            return False
+            return
         if self.check_password()== False:
-            return False
+            return
         if self.confirm_password() == False:
-            return False
+            return
+        if self.check_city() == False:
+            return
+        if self.check_date() == False:
+            return
+        
+        self.add_memeber()
+        self.reset_inputs()
+        windowSignUp.close()
+        windowMain.show()
 
-        #if nothing went wrong return True
-        return True
+    def reset_inputs(self):
+        self.lineFname.setText('')
+        self.lineLname.setText('')
+        self.linePnumber.setText('')
+        self.lineEmail.setText('')
+        self.linePass.setText('')
+        self.lineUsername.setText('')
+        self.lineCity.setText('')
+        self.labelException.setVisible(False)
+
+    def add_memeber(self):
+        fname = self.lineFname.text()
+        lname = self.lineLname.text()
+        pnumber = self.linePnumber.text()
+        email = self.lineEmail.text()
+        password = self.linePass.text()
+        username = self.lineUsername.text()
+        city = self.lineCity.text()
+        date = self.date
+        memeber_info = {'first name': [fname], 'last name': [lname], 'phone number':[pnumber], 'username':[username],
+        'email':[email], 'password':[password], 'city':[city], 'date':[date]}
+
+        database_path = project_path + '//database//members_info.xlsx'
+
+        df_new = pd.DataFrame(memeber_info)
+    
+        # Read existing data
+        df_database = pd.read_excel(database_path)
+        
+        # Append new data
+        df_combined = df_database._append(df_new, ignore_index=True)
+        
+        # Save the combined data to Excel
+        df_combined.to_excel(database_path, index=False)
 
     def check_fname(self):
         fname = self.lineFname.text()
         if fname.isalpha():
             self.labelException.setText('')
+            self.labelFname.setStyleSheet("""
+            background-color:rgba( 255, 255, 255, 10% );
+            border-radius: 8px;
+            padding: 5px 15px;
+            border: 1px solid #e0e4e7;
+        """)
             return True
         else:
             self.labelException.setText('invalid first name')
+            self.labelFname.setStyleSheet("""
+            background-color:rgba( 255, 255, 255, 10% );
+            border-radius: 8px;
+            padding: 5px 15px;
+            border: 1px solid #ff0000;
+        """)
             return False
 
     def check_lname(self):
         lname = self.lineLname.text()
         if lname.isalpha():
             self.labelException.setText('')
+            self.labelLname.setStyleSheet("""
+            background-color:rgba( 255, 255, 255, 10% );
+            border-radius: 8px;
+            padding: 5px 15px;
+            border: 1px solid #e0e4e7;
+        """)
             return True
         else:
             self.labelException.setText('invalid last name')
+            self.labelLname.setStyleSheet("""
+            background-color:rgba( 255, 255, 255, 10% );
+            border-radius: 8px;
+            padding: 5px 15px;
+            border: 1px solid #ff0000;
+            """)
+            return False
+
+    def check_pnumber(self):
+        pnumber = self.linePnumber.text()
+        if pnumber.startswith('09') and pnumber.isnumeric() and len(pnumber) == 11 and pnumber :
+            self.labelException.setText('')
+            self.labelPnumber.setStyleSheet("""
+            background-color:rgba( 255, 255, 255, 10% );
+            border-radius: 8px;
+            padding: 5px 15px;
+            border: 1px solid #e0e4e7;
+        """)
+            return True
+        else:
+            self.labelException.setText('invalid phone number')
+            self.labelPnumber.setStyleSheet("""
+            background-color:rgba( 255, 255, 255, 10% );
+            border-radius: 8px;
+            padding: 5px 15px;
+            border: 1px solid #ff0000;
+            """)
             return False
 
     def check_email(self):
@@ -110,9 +216,21 @@ class SignUp(QWidget):
         valid_email = r'^[a-zA-Z0-9]+@(gmail|yahoo)\.com$'
         if re.match(valid_email, email):
             self.labelException.setText('')
+            self.labelEmail.setStyleSheet("""
+            background-color:rgba( 255, 255, 255, 10% );
+            border-radius: 8px;
+            padding: 5px 15px;
+            border: 1px solid #e0e4e7;
+        """)
             return True
         else:
             self.labelException.setText('Invalid email')
+            self.labelEmail.setStyleSheet("""
+            background-color:rgba( 255, 255, 255, 10% );
+            border-radius: 8px;
+            padding: 5px 15px;
+            border: 1px solid #ff0000;
+            """)
             return False
 
     def check_password(self):
@@ -120,31 +238,88 @@ class SignUp(QWidget):
         password = self.linePass.text()
         if re.match(valid_password, password):
             self.labelException.setText('')
+            self.labelPass.setStyleSheet("""
+            background-color:rgba( 255, 255, 255, 10% );
+            border-radius: 8px;
+            padding: 5px 15px;
+            border: 1px solid #e0e4e7;
+        """)
             return True
         else:
             self.labelException.setText('Invalid password')
+            self.labelPass.setStyleSheet("""
+            background-color:rgba( 255, 255, 255, 10% );
+            border-radius: 8px;
+            padding: 5px 15px;
+            border: 1px solid #ff0000;
+            """)
             return False
+    
+    def check_username(self):
+        username = self.lineUsername.text()
+        if len(username) > 0:
+            self.labelException.setText('')
+            self.labelUsername.setStyleSheet("""
+            background-color:rgba( 255, 255, 255, 10% );
+            border-radius: 8px;
+            padding: 5px 15px;
+            border: 1px solid #e0e4e7;
+        """)
+            return True
+        else:
+            self.labelException.setText("invalid username")
+            self.labelUsername.setStyleSheet("""
+            background-color:rgba( 255, 255, 255, 10% );
+            border-radius: 8px;
+            padding: 5px 15px;
+            border: 1px solid #ff0000;
+            """)
+            return False
+
+        
 
     def confirm_password(self):
         password = self.linePass.text()
         retyped_password = self.lineConfirmPass.text()
         if retyped_password == password:
             self.labelException.setText('')
+            self.labelConfirmPass.setStyleSheet("""
+            background-color:rgba( 255, 255, 255, 10% );
+            border-radius: 8px;
+            padding: 5px 15px;
+            border: 1px solid #e0e4e7;
+        """)
             return True
         else: 
             self.labelException.setText("Retyped password doesn't match the original one")
+            self.labelConfirmPass.setStyleSheet("""
+            background-color:rgba( 255, 255, 255, 10% );
+            border-radius: 8px;
+            padding: 5px 15px;
+            border: 1px solid #ff0000;
+            """)
             return False
                      
-    def check_pnumber(self):
-        pnumber = self.linePnumber.text()
-        if pnumber.startswith('09') and pnumber.isnumeric() and len(pnumber) == 11:
+    def check_city(self):
+        city = self.lineCity.text()
+        if city in self.city_list:
             self.labelException.setText('')
+            self.labelCity.setStyleSheet("""
+            background-color:rgba( 255, 255, 255, 10% );
+            border-radius: 8px;
+            padding: 5px 15px;
+            border: 1px solid #e0e4e7;
+            """)
             return True
         else:
-            self.labelException.setText('invalid phone number')
+            self.labelException.setText('invalid date')
+            self.labelPass.setStyleSheet("""
+            background-color:rgba( 255, 255, 255, 10% );
+            border-radius: 8px;
+            padding: 5px 15px;
+            border: 1px solid #ff0000;
+            """)
             return False
-    def check_city(self):
-        pass
 
     def check_date(self):
         day = int(self.comboDay.currentText())
@@ -152,9 +327,22 @@ class SignUp(QWidget):
         year = int(self.comboYear.currentText())
         if 0 < day <= self.return_max_day(month, year):
             self.labelException.setText('')
+            self.labelFname.setStyleSheet("""
+            background-color:rgba( 255, 255, 255, 10% );
+            border-radius: 8px;
+            padding: 5px 15px;
+            border: 1px solid #e0e4e7;
+        """)
+            self.date = str(year) + '/' + month + '/' + str(day)
             return True
         else:
             self.labelException.setText('invalid date')
+            self.labelPass.setStyleSheet("""
+            background-color:rgba( 255, 255, 255, 10% );
+            border-radius: 8px;
+            padding: 5px 15px;
+            border: 1px solid #ff0000;
+            """)
             return False
 
     def isLeapYear(self, year):
@@ -185,6 +373,17 @@ class SignUp(QWidget):
             return 29
         else:
             return month_dict[month]
+    
+    def play_mute_background(self):
+        global effect
+        if effect.isMuted() == True:
+            effect.setMuted(False)
+            self.buttonMute.setIcon(QIcon(project_path + "//resources//sound.ico"))
+            windowLogin.buttonMute.setIcon(QIcon(project_path + "//resources//sound.ico"))
+        else:
+            effect.setMuted(True)
+            self.buttonMute.setIcon(QIcon(project_path + "//resources//mute sound.ico"))
+            windowLogin.buttonMute.setIcon(QIcon(project_path + "//resources//mute sound.ico"))
 
 #Login ui:
 class LoginPage(QWidget):
@@ -194,6 +393,7 @@ class LoginPage(QWidget):
         #ui/tile/icon setup:
         uic.loadUi(project_path + "//LoginPage.ui", self)
         self.setWindowIcon(QIcon(project_path + "//resources//login icon.ico"))
+        self.buttonMute.setIcon(QIcon(project_path + "//resources//sound.ico"))
         self.setWindowTitle('Login')
 
         #background image setup:
@@ -210,7 +410,7 @@ class LoginPage(QWidget):
         self.labelPassForgot.mousePressEvent = self.open_passForgot
         self.buttonLogin.clicked.connect(self.check_login_input)
         self.buttonSignUp.clicked.connect(self.open_signUp_page)
-        
+        self.buttonMute.clicked.connect(self.play_mute_background)
 
     def open_passForgot(self,*arg, **kwargs):
         pass
@@ -224,33 +424,89 @@ class LoginPage(QWidget):
         if self.attempts < 3:
             username = self.lineUsername.text()
             password = self.linePassword.text()
-            print("called")
             valid_password = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$'
-
-            #code for searching username in database:
-                #code...
-                #if it's found, set labelException's text to 'username found'
-                #else return False
-            self.labelException.setText('username found')
-
-            if self.labelException.text() == 'username found':
-                if re.match(valid_password, password):
-                    self.labelException.setVisible(False)
-                    self.labelException.setText('')
-                else:
-                    self.labelException.setVisible(True)
-                    self.labelException.setText('Invalid password')
-            
-            #code for searching password in the database:
-                #code...
-                #if exsits then close the window and run the mainwindow(or for more security add more features...)
-                #else:
-                #call the lock function to do a +1 attempt(after 3 attempts it will set a cooldown)
+            if 0 < len(username):
+                self.labelException.setVisible(False)
+                self.labelException.setText('')
+                self.labelUsername.setStyleSheet("""
+                background-color:rgba( 255, 255, 255, 10% );
+                border-radius: 8px;
+                padding: 5px 15px;
+                border: 1px solid #e0e4e7;
+                """)
+            else:
+                self.labelException.setVisible(True)
+                self.labelException.setText('invalid username')
+                self.labelUsername.setStyleSheet("""
+                background-color:rgba( 255, 255, 255, 10% );
+                border-radius: 8px;
+                padding: 5px 15px;
+                border: 1px solid #ff0000;
+                """)
                 self.lock()
+                return
+
+            
+            # df = pd.read_excel(project_path + '//database//members_info.xlsx') # can also index sheet by name or fetch all sheets
+            # mylist = df['username'].tolist()
+
+            if re.match(valid_password, password):
+                self.labelException.setVisible(False)
+                self.labelException.setText('')
+                self.labelPassword.setStyleSheet("""
+                background-color:rgba( 255, 255, 255, 10% );
+                border-radius: 8px;
+                padding: 5px 15px;
+                border: 1px solid #e0e4e7;
+                """)
+                if self.check_login(username, password):
+                    windowLogin.close()
+                    windowMain.show()
+                else:
+                    self.lock()
+                    return
+            else:
+                self.labelException.setVisible(True)
+                self.labelException.setText('invalid password')
+                self.labelPassword.setStyleSheet("""
+                background-color:rgba( 255, 255, 255, 10% );
+                border-radius: 8px;
+                padding: 5px 15px;
+                border: 1px solid #ff0000;
+                """)
+                self.lock()
+                return
+                
         else:
             self.countdown()
+    
+    def check_login(self, username, password):
+        try:
+            # Read the Excel file
+            df = pd.read_excel(project_path + '//database//members_info.xlsx')
+            
+            # Check if the DataFrame has the required columns
+            if 'username' not in df.columns or 'password' not in df.columns:
+                self.labelException.setVisible(True)
+                self.labelException.setText('Corrupted database')
+                return False
+       
+            # Check if there is a matching row
+            user_row = df[(df['username'] == username) & (df['password'] == password)]
+            if not user_row.empty:
+                self.labelException.setText('')
+                print('loging seccessful...')
+                return True
+            else:
+                self.labelException.setVisible(True)
+                self.labelException.setText('password or username not found')
+                return False
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return False
             
     def lock(self):
+        print(self.attempts)
         self.attempts += 1
         if self.attempts == 3:
             self.labelException.setText("max attemts reached!")
@@ -261,19 +517,32 @@ class LoginPage(QWidget):
         self.stored_time2 = time.time()
         self.time_difference = self.stored_time2 - self.stored_time1
         if int(self.time_difference) < 60:
+            self.labelException.setVisible(True)
             self.labelException.setText('please try again in: ' + str(int(60 - self.time_difference)) + ' second(s)') 
         else:
             self.attempts = 0
             self.labelException.setText('')
             self.check_login_input()
 
+    def play_mute_background(self):
+        global effect
+        if effect.isMuted() == True:
+            effect.setMuted(False)
+            self.buttonMute.setIcon(QIcon(project_path + "//resources//sound.ico"))
+            windowSignUp.buttonMute.setIcon(QIcon(project_path + "//resources//sound.ico"))
+        else:
+            effect.setMuted(True)
+            self.buttonMute.setIcon(QIcon(project_path + "//resources//mute sound.ico"))
+            windowSignUp.buttonMute.setIcon(QIcon(project_path + "//resources//mute sound.ico"))
+            
+
+effect = QSoundEffect()
 #main:
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     #sound part:
     file_path = project_path + '//resources//background music.wav'
-    effect = QSoundEffect()
     effect.setSource(QUrl.fromLocalFile(file_path))
     effect.setLoopCount(-2)
     effect.play()
@@ -285,7 +554,6 @@ if __name__ == '__main__':
     
     #show window(s):
     windowLogin.show()
-    #windowMain.show()
 
     #exit:
     try:

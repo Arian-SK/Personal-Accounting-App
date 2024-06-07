@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>280</height>
+    <height>330</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>400</width>
-    <height>280</height>
+    <height>330</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -27,11 +27,20 @@
   </property>
   <layout class="QFormLayout" name="formLayout_2">
    <item row="1" column="0">
-    <widget class="QLabel" name="labelEmail">
+    <widget class="QLabel" name="labelUsername">
      <property name="font">
       <font>
        <pointsize>12</pointsize>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+  background-color:rgba( 255, 255, 255, 10% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
      </property>
      <property name="text">
       <string>Username:</string>
@@ -41,13 +50,19 @@
    <item row="1" column="1">
     <widget class="QLineEdit" name="lineUsername">
      <property name="styleSheet">
-      <string notr="true">QLineEdit{ background-color:rgb(47, 47, 47);
-border: 1px solid gray;
-border-radius: 3px;
-padding: 0 8px;
-selection-background-color: darkgray;
-font-size: 16px;}
-QLineEdit:focus { background-color:rgb(47, 47, 47);}</string>
+      <string notr="true">QLineEdit {
+  border-radius: 8px;
+  padding: 5px 15px;
+}
+
+QLineEdit:hover {
+  border: 1px solid #e0e4e7;
+
+}
+
+QLineEdit::focus{
+  border: 1px solid #e0e4e7;
+}</string>
      </property>
      <property name="inputMask">
       <string/>
@@ -64,6 +79,15 @@ QLineEdit:focus { background-color:rgb(47, 47, 47);}</string>
        <pointsize>12</pointsize>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+  background-color:rgba( 255, 255, 255, 10% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+     </property>
      <property name="text">
       <string>Password:</string>
      </property>
@@ -72,13 +96,19 @@ QLineEdit:focus { background-color:rgb(47, 47, 47);}</string>
    <item row="2" column="1">
     <widget class="QLineEdit" name="linePassword">
      <property name="styleSheet">
-      <string notr="true">QLineEdit{ background-color:rgb(47, 47, 47);
-border: 1px solid gray;
-border-radius: 3px;
-padding: 0 8px;
-selection-background-color: darkgray;
-font-size: 16px;}
-QLineEdit:focus { background-color:rgb(47, 47, 47);}</string>
+      <string notr="true">QLineEdit {
+  border-radius: 8px;
+  padding: 5px 15px;
+}
+
+QLineEdit:hover {
+  border: 1px solid #e0e4e7;
+
+}
+
+QLineEdit::focus{
+  border: 1px solid #e0e4e7;
+}</string>
      </property>
      <property name="text">
       <string/>
@@ -126,11 +156,11 @@ QLineEdit:focus { background-color:rgb(47, 47, 47);}</string>
       <string notr="true">QPushButton {
 color: #333;
 border: 1px solid #555;
-border-radius: 1px;
+border-radius: 20px;
 border-style: outset;
 background: qradialgradient(
 cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
-radius: 1.35, stop: 0 #fff, stop: 1 #888
+radius: 1, stop: 0 #fff, stop: 1 #888
 );
 padding: 5px;
 }
@@ -190,11 +220,11 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
       <string notr="true">QPushButton {
 color: #333;
 border: 1px solid #555;
-border-radius: 1px;
+border-radius: 20px;
 border-style: outset;
 background: qradialgradient(
 cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
-radius: 1.35, stop: 0 #fff, stop: 1 #888
+radius: 1, stop: 0 #fff, stop: 1 #888
 );
 padding: 5px;
 }
@@ -209,6 +239,39 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
      </property>
      <property name="text">
       <string>Sign Up</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="0">
+    <widget class="QPushButton" name="buttonMute">
+     <property name="minimumSize">
+      <size>
+       <width>40</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+color: #333;
+border: 1px solid #555;
+border-radius: 20px;
+border-style: outset;
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1, stop: 0 #fff, stop: 1 #888
+);
+padding: 5px;
+}
+
+QPushButton:hover {
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1.35, stop: 0 #fff, stop: 1 #bbb
+);
+}</string>
+     </property>
+     <property name="text">
+      <string/>
      </property>
     </widget>
    </item>
