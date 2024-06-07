@@ -196,7 +196,7 @@ class MainApp(QMainWindow):
         self.buttonInstagram.clicked.connect(self.open_link_instagram)
         self.buttonTelegram.clicked.connect(self.open_link_telegram)
         self.buttonTwitter.clicked.connect(self.open_link_twitter)
-        self.tabWidget.tabBar().hide()
+        #self.tabWidget.tabBar().hide()
         
         #exception handling:
         self.labelExceptionCategory.setVisible(False)
@@ -215,6 +215,7 @@ class MainApp(QMainWindow):
             password = str(user_row['password']).split()
             fname = str(user_row['first name']).split()
             lname = str(user_row['last name']).split()
+            print(lname)
             pnumber = str(user_row['phone number']).split()
             self.email = email[1]
             self.password = password[1]
@@ -1400,7 +1401,7 @@ class SignUp(QWidget):
             hint_text += f'<span style="color: {color};">{condition}</span><br>'
 
         self.labelPassHint.setText(hint_text)
-        self.labelPassHint.show()
+        self.labelPassHint.setVisible(True)
 
     #clicked on password:
     def on_password_focus_in(self, event):
@@ -1452,7 +1453,7 @@ class SignUp(QWidget):
     
     def check_username(self):
         username = self.lineUsername.text()
-        valid_username = r'^(?=.*[a-zA-Z])[a-zA-Z0-9-]+$'
+        valid_username = r'^(?=.*[a-zA-Z])[a-zA-Z0-9_]+$'
         if re.match(valid_username, username):
             self.labelException.setText('')
             self.labelUsername.setStyleSheet("""
@@ -1472,6 +1473,7 @@ class SignUp(QWidget):
                 border: 1px solid #ff0000;
                 """)
                 return False
+
             else:
                 self.labelException.setText('')
                 self.labelUsername.setStyleSheet("""
@@ -1525,7 +1527,7 @@ class SignUp(QWidget):
             """)
             return True
         else:
-            self.labelException.setText('invalid date')
+            self.labelException.setText('invalid city')
             self.labelCity.setStyleSheet("""
             background-color:rgba( 255, 255, 255, 10% );
             border-radius: 8px;
@@ -1640,6 +1642,7 @@ class LoginPage(QWidget):
             self.wrong_sound_isMuted = False
             self.correct_sound_isMuted = False
             SignUp.wrong_sound_isMuted = False
+
         else:
             backgroundSound.Mute(True)
             self.buttonMute.setIcon(QIcon(project_path + "//resources//mute sound.ico"))
@@ -1665,7 +1668,7 @@ class LoginPage(QWidget):
         if self.correct_sound_isMuted == False:
             self.correct_sound.Play()
 
-    def open_passForgot(self,*arg, **kwargs):
+    def open_passForgot(self, *arg, **kwargs):
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle("Recovery")
         msg_box.setText("choose a recovery option:")
@@ -1747,7 +1750,7 @@ class LoginPage(QWidget):
                 """)
             else:
                 self.labelException.setVisible(True)
-                self.labelException.setText('invalid username')
+                self.labelException.setText('empty username')
                 self.labelUsername.setStyleSheet("""
                 background-color:rgba( 255, 255, 255, 10% );
                 border-radius: 8px;
@@ -1812,7 +1815,10 @@ class LoginPage(QWidget):
                 return True
             else:
                 self.labelException.setVisible(True)
-                if username in df['username'].values():
+                contains_string = df['username'].str.contains(username, na=False)
+                # Return True if the string is found, otherwise False
+                is_string_present = contains_string.any()
+                if is_string_present:
                     self.labelException.setText('password is incorrect (forgot your password ?)')
                 else:
                     self.labelException.setText('username not found (you may want to sign up)')
@@ -1825,7 +1831,7 @@ class LoginPage(QWidget):
         print(self.attempts)
         self.attempts += 1
         if self.attempts == 3:
-            self.labelException.setText("max attemts reached!")
+            self.labelException.setText("max attempts reached!")
             self.stored_time1 = time.time()
             self.countdown()
 
