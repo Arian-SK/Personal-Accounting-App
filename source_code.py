@@ -9,7 +9,8 @@ import time #cooldown
 import os #to fine the path
 import shutil #delte account
 import pandas as pd #reading and writing excel
-from openpyxl import load_workbook
+from openpyxl import load_workbook #for searching
+import random # for random security question
 
 
 #finding path to project directory:
@@ -25,7 +26,7 @@ dark_theme_path = "background-image : url(" + str(project_path) + "//resources//
 
 class Sound:
     def __init__(self, name = ''):
-        self.soundtracks_list = ['background music', 'Alert']
+        self.soundtracks_list = ['background music', 'Alert', 'Correct']
         self.soundtrack = QSoundEffect()
         if name == '':
             pass
@@ -671,6 +672,16 @@ class SignUp(QWidget):
         #sound initilization:
         self.wrong_sound = Sound('Alert')
         self.wrong_sound_isMuted = False
+        self.correct_sound = Sound('Correct')
+        self.correct_sound_isMuted = False
+
+        #password line:
+        self.linePass.textChanged.connect(self.update_labelPassHint)
+        self.linePass.focusInEvent = self.on_password_focus_in
+        self.linePass.focusOutEvent = self.on_password_focus_out
+        self.labelPassHint.setVisible(False)
+        self.buttonToggleEcho.clicked.connect(self.toggle_echo_mode)
+        self.buttonToggleEcho.setIcon(QIcon(project_path + "//resources//close eye.ico"))
         
     def change_text(self):
         city = self.lineCity.text()
@@ -684,6 +695,10 @@ class SignUp(QWidget):
     def play_wrong(self):
         if self.wrong_sound_isMuted == False:
             self.wrong_sound.Play()
+    
+    def play_correct(self):
+        if self.correct_sound_isMuted == False:
+            self.correct_sound.Play()
 
     #function to check inputs:
     def check(self):
@@ -722,6 +737,7 @@ class SignUp(QWidget):
             return
         else:
             self.labelException.setText('')
+            self.play_correct()
 
         self.add_memeber()
         self.reset_inputs()
@@ -734,6 +750,7 @@ class SignUp(QWidget):
         self.linePnumber.setText('')
         self.lineEmail.setText('')
         self.linePass.setText('')
+        self.lineConfirmPass.setText('')
         self.lineUsername.setText('')
         self.lineCity.setText('')
         self.labelException.setVisible(False)
@@ -765,7 +782,8 @@ class SignUp(QWidget):
 
     def check_fname(self):
         fname = self.lineFname.text()
-        if fname.isalpha():
+        valid_fname = r'^[a-zA-Z]+$'
+        if re.match(valid_fname, fname):
             self.labelException.setText('')
             self.labelFname.setStyleSheet("""
             background-color:rgba( 255, 255, 255, 10% );
@@ -786,7 +804,8 @@ class SignUp(QWidget):
 
     def check_lname(self):
         lname = self.lineLname.text()
-        if lname.isalpha():
+        valid_lname = r'^[a-zA-Z]+$'
+        if re.match(valid_lname, lname):
             self.labelException.setText('')
             self.labelLname.setStyleSheet("""
             background-color:rgba( 255, 255, 255, 10% );
@@ -884,6 +903,51 @@ class SignUp(QWidget):
             """)
             return False
 
+    #check for changes in password and see if the condition is met:
+    def update_labelPassHint(self):
+        password = self.linePass.text()
+        conditions = {
+            'At least one uppercase letter': bool(re.search(r'[A-Z]', password)),
+            'At least one lowercase letter': bool(re.search(r'[a-z]', password)),
+            'At least one digit': bool(re.search(r'\d', password)),
+            'At least one symbol character': bool(re.search(r'[!@#$%^&*()\-_=+{};:,<.>]', password)),
+            'At least 8 characters long': len(password) >= 8
+        }
+
+        hint_text = ''
+        for condition, met in conditions.items():
+            color = 'green' if met else 'gray'
+            hint_text += f'<span style="color: {color};">{condition}</span><br>'
+
+        self.labelPassHint.setText(hint_text)
+        self.labelPassHint.show()
+
+    #clicked on password:
+    def on_password_focus_in(self, event):
+        self.update_labelPassHint()
+        self.labelPassHint.setVisible(True)
+
+    #not clicked:
+    def on_password_focus_out(self, event):
+        self.labelPassHint.setVisible(False)
+
+    #see/hide password:
+    def toggle_echo_mode(self, mode = ''):
+        if self.linePass.echoMode() == QLineEdit.EchoMode.Password:
+            self.linePass.setEchoMode(QLineEdit.EchoMode.Normal)
+            self.buttonToggleEcho.setIcon(QIcon(project_path + "//resources//open eye.ico"))
+        else:
+            self.linePass.setEchoMode(QLineEdit.EchoMode.Password)
+            self.buttonToggleEcho.setIcon(QIcon(project_path + "//resources//close eye.ico"))
+
+        if mode == 'off':
+            self.linePass.setEchoMode(QLineEdit.EchoMode.Normal)
+            self.buttonToggleEcho.setIcon(QIcon(project_path + "//resources//open eye.ico"))
+        elif mode == 'on':
+            self.linePass.setEchoMode(QLineEdit.EchoMode.Password)
+            self.buttonToggleEcho.setIcon(QIcon(project_path + "//resources//close eye.ico"))
+        self.on_password_focus_in(self.event)
+
     def check_password(self):
         valid_password = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$'
         password = self.linePass.text()
@@ -908,7 +972,8 @@ class SignUp(QWidget):
     
     def check_username(self):
         username = self.lineUsername.text()
-        if len(username) > 0:
+        valid_username = r'^(?=.*[a-zA-Z])[a-zA-Z0-9-]+$'
+        if re.match(valid_username, username):
             self.labelException.setText('')
             self.labelUsername.setStyleSheet("""
             background-color:rgba( 255, 255, 255, 10% );
@@ -981,7 +1046,7 @@ class SignUp(QWidget):
             return True
         else:
             self.labelException.setText('invalid date')
-            self.labelPass.setStyleSheet("""
+            self.labelCity.setStyleSheet("""
             background-color:rgba( 255, 255, 255, 10% );
             border-radius: 8px;
             padding: 5px 15px;
@@ -995,7 +1060,7 @@ class SignUp(QWidget):
         year = int(self.comboYear.currentText())
         if 0 < day <= self.return_max_day(month, year):
             self.labelException.setText('')
-            self.labelFname.setStyleSheet("""
+            self.labelDate.setStyleSheet("""
             background-color:rgba( 255, 255, 255, 10% );
             border-radius: 8px;
             padding: 5px 15px;
@@ -1005,7 +1070,7 @@ class SignUp(QWidget):
             return True
         else:
             self.labelException.setText('invalid date')
-            self.labelPass.setStyleSheet("""
+            self.labelDate.setStyleSheet("""
             background-color:rgba( 255, 255, 255, 10% );
             border-radius: 8px;
             padding: 5px 15px;
@@ -1070,6 +1135,8 @@ class LoginPage(QWidget):
         #sound initilization:
         self.wrong_sound = Sound('Alert')
         self.wrong_sound_isMuted = False
+        self.correct_sound = Sound('Correct')
+        self.correct_sound_isMuted = False
 
         #signal handling:
         self.labelPassForgot.mousePressEvent = self.open_passForgot
@@ -1077,6 +1144,8 @@ class LoginPage(QWidget):
         self.buttonSignUp.clicked.connect(self.open_signUp_page)
         self.buttonMute.clicked.connect(self.play_mute_background)
         self.buttonLogin.setShortcut("Return")
+        self.buttonToggleEcho.clicked.connect(self.toggle_echo_mode)
+        self.buttonToggleEcho.setIcon(QIcon(project_path + "//resources//close eye.ico"))
 
     def reset_inputs(self):
         self.linePassword.setText('')
@@ -1089,6 +1158,7 @@ class LoginPage(QWidget):
             windowSignUp.buttonMute.setIcon(QIcon(project_path + "//resources//sound.ico"))
             windowMain.buttonMute.setIcon(QIcon(project_path + "//resources//sound.ico"))
             self.wrong_sound_isMuted = False
+            self.correct_sound_isMuted = False
             SignUp.wrong_sound_isMuted = False
         else:
             backgroundSound.Mute(True)
@@ -1096,11 +1166,24 @@ class LoginPage(QWidget):
             windowSignUp.buttonMute.setIcon(QIcon(project_path + "//resources//mute sound.ico"))
             windowMain.buttonMute.setIcon(QIcon(project_path + "//resources//mute sound.ico"))
             self.wrong_sound_isMuted = True
+            self.correct_sound_isMuted == True
             SignUp.wrong_sound_isMuted = True
+
+    def toggle_echo_mode(self):
+        if self.linePassword.echoMode() == QLineEdit.EchoMode.Password:
+            self.linePassword.setEchoMode(QLineEdit.EchoMode.Normal)
+            self.buttonToggleEcho.setIcon(QIcon(project_path + "//resources//open eye.ico"))
+        else:
+            self.linePassword.setEchoMode(QLineEdit.EchoMode.Password)
+            self.buttonToggleEcho.setIcon(QIcon(project_path + "//resources//close eye.ico"))
 
     def play_wrong(self):
         if self.wrong_sound_isMuted == False:
             self.wrong_sound.Play()
+    
+    def play_correct(self):
+        if self.correct_sound_isMuted == False:
+            self.correct_sound.Play()
 
     def open_passForgot(self,*arg, **kwargs):
         windowLogin.close()
@@ -1148,13 +1231,22 @@ class LoginPage(QWidget):
                 border: 1px solid #e0e4e7;
                 """)
                 if self.check_login(self.username, self.password):
-                    windowLogin.close()
-                    self.reset_inputs()
-                    windowMain.reinit()
-                    windowMain.show()
+                    reply = QMessageBox.question(self, 'Scurity question', 'we will ask you a question for security reasons are you ready ?',
+                                         QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+                    if reply == QMessageBox.StandardButton.Yes:
+                        if self.check_security() == False:
+                            self.lock()
+                            return
+                        else:
+                            self.play_correct()
+                            windowLogin.close()
+                            self.reset_inputs()
+                            windowMain.reinit()
+                            windowMain.show()
+                    else:
+                        pass
                 else:
                     self.lock()
-                    return
             else:
                 self.labelException.setVisible(True)
                 self.labelException.setText('invalid password')
@@ -1170,7 +1262,59 @@ class LoginPage(QWidget):
                 
         else:
             self.countdown()
-    
+
+    def check_security(self):
+        num = random.randint(1, 3)
+        if num == 1:
+            city, ok_pressed = QInputDialog.getText(self, 'Security question', 'Please enter the name of the city you were born:')
+            City = city.capitalize()
+            username = self.lineUsername.text()
+            df = pd.read_excel(project_path + '//database//members_info.xlsx')
+            try:
+                user_row = df[(df['username'] == username) & (df['city'] == City)]
+                if not user_row.empty:
+                    self.labelException.setText('')
+                    return True
+                else:
+                    self.labelException.setVisible(True)
+                    self.labelException.setText('incorrect')
+                    return False
+            except Exception as e:
+                print(e)
+                return False
+        if num == 2:
+            email, ok_pressed = QInputDialog.getText(self, 'Security question', 'Please enter your email:')
+            username = self.lineUsername.text()
+            df = pd.read_excel(project_path + '//database//members_info.xlsx')
+            try:
+                user_row = df[(df['username'] == username) & (df['email'] == email)]
+                if not user_row.empty:
+                    self.labelException.setText('')
+                    return True
+                else:
+                    self.labelException.setVisible(True)
+                    self.labelException.setText('incorrect')
+                    return False
+            except Exception as e:
+                print(e)
+                return False
+        if num == 3:
+            pnumber, ok_pressed = QInputDialog.getText(self, 'Security question', 'Please enter your phone number:')
+            username = self.lineUsername.text()
+            df = pd.read_excel(project_path + '//database//members_info.xlsx')
+            try:
+                user_row = df[(df['username'] == username) & (df['phone number'] == int(pnumber))]
+                if not user_row.empty:
+                    self.labelException.setText('')
+                    return True
+                else:
+                    self.labelException.setVisible(True)
+                    self.labelException.setText('incorrect')
+                    return False
+            except Exception as e:
+                print(e)
+                return False
+
     def check_login(self, username, password):
         try:
             # Read the Excel file
@@ -1186,7 +1330,6 @@ class LoginPage(QWidget):
             user_row = df[(df['username'] == username) & (df['password'] == password)]
             if not user_row.empty:
                 self.labelException.setText('')
-                print('loging seccessful...')
                 return True
             else:
                 self.labelException.setVisible(True)
