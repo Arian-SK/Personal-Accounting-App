@@ -214,8 +214,7 @@ class MainApp(QMainWindow):
             email = str(user_row['email']).split()
             password = str(user_row['password']).split()
             fname = str(user_row['first name']).split()
-            lname = str(user_row['last name']).split()
-            print(lname)
+            lname = str(user_row['last name']).split()#problem with two part lnames
             pnumber = str(user_row['phone number']).split()
             self.email = email[1]
             self.password = password[1]
