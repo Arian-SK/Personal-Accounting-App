@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import * #to import every tools from QtWidgets (e.g. QPushButton, QLabel ...)
-from PyQt6.QtCore import QUrl, Qt, QStringListModel, pyqtSignal  #to define path, stringmodel for viewlist ...
-from PyQt6.QtGui import QIcon, QKeySequence, QDesktopServices, QPixmap #Icon, shortcut keys, link directions, Images
+from PyQt6.QtCore import QUrl, Qt, QStringListModel, pyqtSignal, QPropertyAnimation, QEasingCurve, QSequentialAnimationGroup, QSize  #to define path, stringmodel for viewlist ...
+from PyQt6.QtGui import QIcon, QKeySequence, QDesktopServices, QPixmap, QDragEnterEvent, QDropEvent #Icon, shortcut keys, link directions, Images
 from PyQt6 import uic # for loading ui seperate from source code (Qt designer)
 from PyQt6.QtMultimedia import QSoundEffect #for soundtracks
 import sys #to run the app
@@ -154,29 +154,35 @@ class MainApp(QMainWindow):
         self.buttonSearch.clicked.connect(lambda: (windowLogin.play_click(), self.go_to_SearchTab()))
         self.buttonReports.clicked.connect(lambda: (windowLogin.play_click(), self.go_to_ReportsTab()))
         self.buttonCategories.clicked.connect(lambda: (windowLogin.play_click(), self.go_to_CategoriesTab()))
-        self.buttonProfile.clicked.connect(lambda: (windowLogin.play_click(), self.go_to_ProfileTab()))
+        self.buttonProfile.clicked.connect(lambda: (windowLogin.play_click(), self.go_to_ProfileTab(), self.set_profile_pic(True)))
 
             #Profile:
-        self.comboProfiles.currentIndexChanged.connect(self.set_profile_pic)
+        self.buttonPFP.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonPFP), self.open_file_dialog()))
+        self.labelProfilePic.setAcceptDrops(True)
+        self.setAcceptDrops(True)
+        self.comboProfiles.currentIndexChanged.connect(lambda : self.set_profile_pic(False))
         self.load_user_profile()
-        self.set_profile_pic()
-        self.buttonChange.clicked.connect(lambda: (windowLogin.play_click(), self.change_profile_details()))
+        self.buttonChange.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonChange), self.change_profile_details()))
         self.lineEmail.setEnabled(False)
         self.linePassword.setEnabled(False)
         self.lineFname.setEnabled(False)
         self.lineLname.setEnabled(False)
         self.linePnumber.setEnabled(False)
-        self.buttonDelete.clicked.connect(lambda: (windowLogin.play_click(), self.delete_account()))
-        self.buttonDeleteAllSubs.clicked.connect(lambda: (windowLogin.play_click(), self.delete_subs()))
+        self.buttonDelete.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonDelete), self.delete_account()))
+        self.buttonDeleteAllSubs.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonDeleteAllSubs), self.delete_subs()))
         self.buttonLogOut.clicked.connect(lambda: (windowLogin.play_click(), self.log_out()))
         
             #Income:
-        self.buttonIncomeSubmit.clicked.connect(lambda: (windowLogin.play_click(), self.check_Income_inputs()))
+        self.buttonIncomeSubmit.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonIncomeSubmit), self.check_Income_inputs()))
         self.labelExceptionIncome.setVisible(False)
 
             #Categories:
-        self.buttonCategorySubmit.clicked.connect(lambda: (windowLogin.play_click(), self.addCategory()))
+        self.buttonCategorySubmit.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonCategorySubmit), self.addCategory()))
         self.update_list_view_category()
+
+            #Cost:
+        self.buttonCostSubmit.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonCostSubmit), self.check_Cost_inputs()))
+        self.labelExceptionCost.setVisible(False)
 
             #back buttons:
         self.buttonBackFromIncome.clicked.connect(lambda: (windowLogin.play_click(), self.go_to_MainMenu()))
@@ -187,28 +193,25 @@ class MainApp(QMainWindow):
         self.buttonBackFromSearch.clicked.connect(lambda: (windowLogin.play_click(),self.go_to_MainMenu()))
         self.buttonBackFromReports.clicked.connect(lambda: (windowLogin.play_click(),self.go_to_MainMenu()))
 
-            #Cost:
-        self.buttonCostSubmit.clicked.connect(lambda: (windowLogin.play_click(), self.check_Cost_inputs()))
-        self.labelExceptionCost.setVisible(False)
-
             #Report:
         if self.username:
             self.load_incomes()
             self.load_costs()
-        self.buttonReportsSubmit.clicked.connect(lambda: (windowLogin.play_click(), self.perform_reports()))
+
+        self.buttonReportsSubmit.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonReportsSubmit), self.perform_reports()))
         self.buttonGroupReports = QButtonGroup()
         self.buttonGroupReports.addButton(self.radioReportsPastD)
         self.buttonGroupReports.addButton(self.radioReportsPastM)
         self.buttonGroupReports.addButton(self.radioReportsPastY)
         self.buttonGroupReports.addButton(self.radioReportsNone)
         self.radioReportsNone.setChecked(True)
-        self.buttonReportsRange.clicked.connect(lambda: (windowLogin.play_click(), self.get_integer_values2()))
-        self.buttonReportsReset.clicked.connect(lambda: (windowLogin.play_click(), self.reset_reports()))
+        self.buttonReportsRange.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonReportsRange), self.get_integer_values2()))
+        self.buttonReportsReset.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonReportsReset), self.reset_reports()))
         self.first_range1 = 0
         self.second_range2 = 0
 
             #Search:
-        self.buttonSearchSubmit.clicked.connect(lambda: (windowLogin.play_click(), self.begin_search()))
+        self.buttonSearchSubmit.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonSearchSubmit), self.begin_search()))
         self.buttonGroupSearch1 = QButtonGroup()
         self.buttonGroupSearch1.addButton(self.radioSearchIncomesOnly)
         self.buttonGroupSearch1.addButton(self.radioSearchCostsOnly)
@@ -219,20 +222,21 @@ class MainApp(QMainWindow):
         self.buttonGroupSearch2.addButton(self.radioSearchPast3)
         self.buttonGroupSearch2.addButton(self.radioSearchNone2)
         self.radioSearchNone2.setChecked(True)
-        self.buttonSearchRange.clicked.connect(lambda: (windowLogin.play_click(), self.get_integer_values()))
-        self.buttonSearchReset.clicked.connect(lambda: (windowLogin.play_click(), self.reset_search()))
+        self.buttonSearchRange.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonSearchRange), self.get_integer_values()))
+        self.buttonSearchReset.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonSearchReset), self.reset_search()))
         self.firt_range = 0
         self.second_range = 0
 
             #setting:
-        self.buttonMute.clicked.connect(lambda: (windowLogin.play_click(), windowLogin.play_mute_background()))
+        self.buttonMute.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonMute), windowLogin.play_mute_background()))
         self.sliderVolume.valueChanged.connect(self.update_volume)
-        self.buttonChangeTheme.clicked.connect(lambda: (windowLogin.play_click(), self.change_theme()))
-        self.buttonAbout.clicked.connect(lambda: (windowLogin.play_click(),self.show_message_about()))
-        self.buttonDonate.clicked.connect(lambda: (windowLogin.play_click(), self.open_link_donation()))
-        self.buttonInstagram.clicked.connect(lambda: (windowLogin.play_click(), self.open_link_instagram()))
-        self.buttonTelegram.clicked.connect(lambda: (windowLogin.play_click(), self.open_link_telegram()))
-        self.buttonTwitter.clicked.connect(lambda: (windowLogin.play_click(), self.open_link_twitter()))
+        self.buttonChangeTheme.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonChangeTheme), self.change_theme()))
+        self.buttonAbout.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonAbout),self.show_message_about()))
+        self.buttonDonate.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonDonate), self.open_link_donation()))
+        self.buttonInstagram.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonInstagram), self.open_link_instagram()))
+        self.buttonTelegram.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonTelegram), self.open_link_telegram()))
+        self.buttonTwitter.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonTwitter), self.open_link_twitter()))
+        self.buttonReportBug.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonReportBug), self.open_link_bug()))
         #self.tabWidget.tabBar().hide()
         
         #exception handling:
@@ -242,6 +246,35 @@ class MainApp(QMainWindow):
     #reinitialize the class
     def reinit(self):
         self.__init__()
+
+    def animate_button(self, bname):
+        # Disable the button to prevent multiple rapid clicks
+        bname.setEnabled(False)
+
+        original_rect = bname.geometry()
+        larger_rect = original_rect.adjusted(-10, -10, 10, 10)
+        
+        pop_animation = QSequentialAnimationGroup(self)
+        
+        grow_animation = QPropertyAnimation(bname, b"geometry")
+        grow_animation.setDuration(150)
+        grow_animation.setEasingCurve(QEasingCurve.Type.OutQuad)
+        grow_animation.setStartValue(original_rect)
+        grow_animation.setEndValue(larger_rect)
+
+        shrink_animation = QPropertyAnimation(bname, b"geometry")
+        shrink_animation.setDuration(150)
+        shrink_animation.setEasingCurve(QEasingCurve.Type.InQuad)
+        shrink_animation.setStartValue(larger_rect)
+        shrink_animation.setEndValue(original_rect)
+        
+        pop_animation.addAnimation(grow_animation)
+        pop_animation.addAnimation(shrink_animation)
+
+        # Re-enable the button after the animation finishes
+        pop_animation.finished.connect(lambda: bname.setEnabled(True))
+        
+        pop_animation.start()
 
     def online_time(self):
         self.logout_time = datetime.now()
@@ -268,6 +301,10 @@ class MainApp(QMainWindow):
             self.fname = str(info[1])
             self.lname = str(info[2])
             self.pnumber = str(info[3])
+            self.pfp_path = str(info[11])
+            print(self.pfp_path)
+            if self.pfp_path:
+                self.set_profile_pic(True)
             self.lineEmail.setText(self.email)
             self.linePassword.setText(self.password)
             self.lineUsername.setText(self.username)
@@ -277,13 +314,43 @@ class MainApp(QMainWindow):
         except TypeError:
             pass
 
-    def set_profile_pic(self):
+    def set_profile_pic(self, isCostume = False):
         profile_name = self.comboProfiles.currentText()
-        pixmap = QPixmap(project_path + '//resources//' + profile_name + '.jpg')
+        profile_path = project_path + '//resources//' + profile_name + '.jpg'
+
+        if isCostume:
+            try:
+                profile_path = self.pfp_path
+            except:
+                pass
+
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE members_info SET profile_pic = ? WHERE username = ?", (profile_path, self.username))
+        conn.commit()
+        conn.close()
+
+        pixmap = QPixmap(profile_path)
         scaled_pixmap = pixmap.scaled(self.labelProfilePic.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
         self.labelProfilePic.setPixmap(scaled_pixmap)
         self.labelProfilePic.setAlignment(Qt.AlignmentFlag.AlignCenter)
     
+    def open_file_dialog(self):
+        self.pfp_path, _ = QFileDialog.getOpenFileName(self, 'Open file', '', 'All Files (*)')
+        if self.pfp_path:
+            self.set_profile_pic(True)
+
+    def dragEnterEvent(self, event: QDragEnterEvent):
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
+            self.set_profile_pic(True)
+
+    def dropEvent(self, event: QDropEvent):
+        urls = event.mimeData().urls()
+        if urls and urls[0].isLocalFile():
+            self.pfp_path = urls[0].toLocalFile()
+            self.set_profile_pic(True)
+
     def change_profile_details(self):
         if self.buttonChange.text() == 'Change':
             #change
@@ -1199,6 +1266,9 @@ class MainApp(QMainWindow):
     
     def open_link_twitter(self):
         QDesktopServices.openUrl(QUrl('https://twitter.com/'))
+    
+    def open_link_bug(sefl):
+        QDesktopServices.openUrl(QUrl('https://github.com/Arian-SK/Personal-Accounting-App'))
 
 
 #sign up ui:        
@@ -1385,7 +1455,8 @@ class SignUp(QWidget):
                             city TEXT,
                             date TEXT,
                             security_type TEXT,
-                            security_answer TEXT
+                            security_answer TEXT,
+                            profile_pic TEXT
                         )''')
 
         # Insert the new member data
