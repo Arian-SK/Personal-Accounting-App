@@ -1,0 +1,16 @@
+********* DO NOT RUN THE INNO SCRIPT FILE ! ***********
+
+inno script contains the instructions needed to make the setup file.
+the path (source_code path) given to this script may vary across devices,
+so by runnig this on a different devices other than creator's,
+may corrupt the setup.exe file.
+(this file is here only for showcase)
+
+------------------------------------------------------------------------
+
+to install the app run the 'PAA setup.exe' file.
+
+any update setup files in the future should be given the folder path
+in which the app is installed in.
+
+GHSK

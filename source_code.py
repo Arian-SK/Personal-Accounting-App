@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import * #to import every tools from QtWidgets (e.g. QPushButton, QLabel ...)
 from PyQt6.QtCore import QUrl, Qt, QStringListModel, pyqtSignal, QPropertyAnimation, QEasingCurve, QSequentialAnimationGroup, QSize  #to define path, stringmodel for viewlist ...
 from PyQt6.QtGui import QIcon, QKeySequence, QDesktopServices, QPixmap, QDragEnterEvent, QDropEvent #Icon, shortcut keys, link directions, Images
-from PyQt6 import uic # for loading ui seperate from source code (Qt designer)
+from PyQt6 import uic, QtCore # for loading ui seperate from source code (Qt designer)
 from PyQt6.QtMultimedia import QSoundEffect #for soundtracks
 import sys #to run the app
 import re #regex
@@ -720,7 +720,7 @@ class MainApp(QMainWindow):
             self.CostDetails = self.lineCostDetails.text()
             self.CostType = self.comboCostType.currentText()
 
-            conn = sqlite3.connect(self.incomes_db_path)
+            conn = sqlite3.connect(self.costs_db_path)
             cursor = conn.cursor()
             cursor.execute('''
                 INSERT INTO Costs (Cost, Date, Source, Details, Type, submit_date)
@@ -733,7 +733,7 @@ class MainApp(QMainWindow):
             category = self.lineNewCategory.text()
             self.new_category = category.capitalize()
 
-            conn = sqlite3.connect(self.incomes_db_path)
+            conn = sqlite3.connect(self.categories_db_path)
             cursor = conn.cursor()
             cursor.execute('''
                 INSERT INTO Categories (Categories, submit_date)
@@ -1292,9 +1292,9 @@ class SignUp(QWidget):
         self.labelException.setVisible(False)
 
         #signal handling:
-        self.buttonSignUp.clicked.connect(lambda: (windowLogin.play_click(), self.check()))
+        self.buttonSignUp.clicked.connect(lambda: (windowLogin.play_click(), windowMain.animate_button(self.buttonSignUp), self.check()))
         self.buttonLogin.clicked.connect(lambda: (windowLogin.play_click(), self.open_login_page()))
-        self.buttonMute.clicked.connect(lambda: (windowLogin.play_click(), windowLogin.play_mute_background()))
+        self.buttonMute.clicked.connect(lambda: (windowLogin.play_click(), windowMain.animate_button(self.buttonMute), windowLogin.play_mute_background()))
         self.lineCity.textChanged.connect(self.change_text)
         self.buttonSignUp.setShortcut("Return")
 
@@ -1315,6 +1315,11 @@ class SignUp(QWidget):
         self.correct_sound_isMuted = False
         self.click_sound = Sound('Click')
         self.click_sound_isMuted = False
+
+        #date:
+        self.dateEdit.setCalendarPopup(True)
+        self.dateEdit.setDisplayFormat("yyyy/MM/dd")
+        self.dateEdit.setMaximumDate(QtCore.QDate(2005, 12, 31))
 
         #password line:
         self.linePass.textChanged.connect(self.update_labelPassHint)
@@ -1437,12 +1442,11 @@ class SignUp(QWidget):
         date = self.date
         security_answer = self.security_answer
         security_type = self.option
-
         # Connect to the database (or create it if it doesn't exist)
         database_path = project_path + '//database//members_info.db'
         conn = sqlite3.connect(database_path)
         cursor = conn.cursor()
-
+        
         # Create the table if it doesn't exist
         cursor.execute('''CREATE TABLE IF NOT EXISTS members_info (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1464,7 +1468,6 @@ class SignUp(QWidget):
                             first_name, last_name, phone_number, username, email, password, city, date, security_type, security_answer
                         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', 
                         (fname, lname, pnumber, username, email, password, city, date, security_type, security_answer))
-
         # Commit the changes and close the connection
         conn.commit()
         conn.close()
@@ -1776,60 +1779,8 @@ class SignUp(QWidget):
             return False
 
     def check_date(self):
-        self.labelException.setVisible(True)
-        day = int(self.comboDay.currentText())
-        month = self.comboMonth.currentText()
-        year = int(self.comboYear.currentText())
-        if 0 < day <= self.return_max_day(month, year):
-            self.labelException.setVisible(False)
-            self.labelException.setText('')
-            self.labelDate.setStyleSheet("""
-            background-color:rgba( 255, 255, 255, 10% );
-            border-radius: 8px;
-            padding: 5px 15px;
-            border: 1px solid #e0e4e7;
-        """)
-            self.date = str(year) + '/' + month + '/' + str(day)
-            return True
-        else:
-            self.labelException.setText('invalid date')
-            self.labelDate.setStyleSheet("""
-            background-color:rgba( 255, 255, 255, 10% );
-            border-radius: 8px;
-            padding: 5px 15px;
-            border: 1px solid #ff0000;
-            """)
-            return False
-
-    def isLeapYear(self, year):
-        leapList = list()
-        for i in range(1920, 2006, 4):
-            leapList.append(i)
-        if year in leapList:
-            return True
-        else:
-            return False
-
-    def return_max_day(self, month, year):
-        month_dict = {
-            'January' : 31,
-            'February' : 28,
-            'March' : 31,
-            'April' : 30,
-            'May' : 31,
-            'June' : 30,
-            'July' : 31,
-            'August' : 31,
-            'September' : 30,
-            'October' : 31,
-            'November' : 30,
-            'December' : 31,
-        }
-        if self.isLeapYear(year) and month == 'February':
-            return 29
-        else:
-            return month_dict[month]
-    
+        self.date = self.dateEdit.date().toString("yyyy/MM/dd")
+        return True
 
 #Login ui:
 class LoginPage(QWidget):
@@ -2220,4 +2171,4 @@ if __name__ == '__main__':
     try:
         sys.exit(app.exec())
     except SystemExit:
-        print('Closing Window...')
+        print('Closing App...')
