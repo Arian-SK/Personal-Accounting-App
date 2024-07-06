@@ -44,10 +44,13 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>7</number>
+       <number>0</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
+      </property>
+      <property name="movable">
+       <bool>true</bool>
       </property>
       <property name="tabBarAutoHide">
        <bool>false</bool>
@@ -264,6 +267,45 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
+        <item row="3" column="1">
+         <widget class="QPushButton" name="buttonReports">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+color: #333;
+border: 1px solid #555;
+border-radius: 20px;
+border-style: outset;
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1, stop: 0 #fff, stop: 1 #888
+);
+padding: 5px;
+}
+
+QPushButton:hover {
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1.35, stop: 0 #fff, stop: 1 #bbb
+);
+}</string>
+          </property>
+          <property name="text">
+           <string>Reports</string>
+          </property>
+         </widget>
+        </item>
         <item row="3" column="0">
          <widget class="QPushButton" name="buttonSettings">
           <property name="minimumSize">
@@ -303,8 +345,8 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
-         <widget class="QPushButton" name="buttonReports">
+        <item row="5" column="1">
+         <widget class="QPushButton" name="buttonLogOut">
           <property name="minimumSize">
            <size>
             <width>40</width>
@@ -338,7 +380,7 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
 }</string>
           </property>
           <property name="text">
-           <string>Reports</string>
+           <string>Log out</string>
           </property>
          </widget>
         </item>
@@ -2037,34 +2079,8 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
         <string>Settings</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_8">
-        <item row="1" column="0" colspan="4">
-         <spacer name="horizontalSpacer_8">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="1" column="11" colspan="3">
-         <spacer name="horizontalSpacer_7">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="16">
-         <widget class="QPushButton" name="buttonMute">
+        <item row="3" column="7">
+         <widget class="QPushButton" name="buttonTwitter">
           <property name="minimumSize">
            <size>
             <width>40</width>
@@ -2096,50 +2112,13 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
-        <item row="1" column="10">
-         <spacer name="horizontalSpacer_9">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="0" colspan="15">
-         <widget class="QSlider" name="sliderVolume">
-          <property name="styleSheet">
-           <string notr="true">  QSlider{background-color:rgba(0,0,0, 40% );
-  border-radius: 8px;
-  padding: 5px 15px;}
-
-QSlider:hover {
-  border: 1px solid #e0e4e7;}</string>
-          </property>
-          <property name="maximum">
-           <number>100</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="16">
-         <widget class="QPushButton" name="buttonChangeTheme">
+        <item row="3" column="8">
+         <widget class="QPushButton" name="buttonInstagram">
           <property name="minimumSize">
            <size>
             <width>40</width>
             <height>40</height>
            </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Impact</family>
-            <pointsize>12</pointsize>
-           </font>
           </property>
           <property name="styleSheet">
            <string notr="true">QPushButton {
@@ -2162,67 +2141,44 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
 }</string>
           </property>
           <property name="text">
-           <string>change theme</string>
+           <string/>
           </property>
          </widget>
         </item>
-        <item row="1" column="6">
-         <spacer name="horizontalSpacer_11">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
+        <item row="3" column="6">
+         <widget class="QPushButton" name="buttonTelegram">
+          <property name="minimumSize">
            <size>
             <width>40</width>
-            <height>20</height>
+            <height>40</height>
            </size>
           </property>
-         </spacer>
-        </item>
-        <item row="0" column="15">
-         <widget class="QLabel" name="labelVolumeLevel">
-          <property name="font">
-           <font>
-            <family>Impact</family>
-           </font>
-          </property>
           <property name="styleSheet">
-           <string notr="true">QLabel {
-  background-color:rgba(0,0,0, 20% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
+           <string notr="true">QPushButton {
+color: #333;
+border: 1px solid #555;
+border-radius: 20px;
+border-style: outset;
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1, stop: 0 #fff, stop: 1 #888
+);
+padding: 5px;
 }
-</string>
+
+QPushButton:hover {
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1.35, stop: 0 #fff, stop: 1 #bbb
+);
+}</string>
           </property>
           <property name="text">
-           <string>percent</string>
+           <string/>
           </property>
          </widget>
         </item>
-        <item row="1" column="15">
-         <widget class="QLabel" name="labelTheme">
-          <property name="font">
-           <font>
-            <family>Impact</family>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-  background-color:rgba(0,0,0, 20% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
-}
-</string>
-          </property>
-          <property name="text">
-           <string>Star</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="15">
+        <item row="3" column="14">
          <widget class="QPushButton" name="buttonAbout">
           <property name="minimumSize">
            <size>
@@ -2261,7 +2217,7 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
-        <item row="2" column="16">
+        <item row="3" column="15">
          <widget class="QPushButton" name="buttonDonate">
           <property name="minimumSize">
            <size>
@@ -2300,8 +2256,26 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
-        <item row="2" column="8">
-         <widget class="QPushButton" name="buttonTwitter">
+        <item row="0" column="0" colspan="14">
+         <widget class="QSlider" name="sliderVolume">
+          <property name="styleSheet">
+           <string notr="true">  QSlider{background-color:rgba(0,0,0, 40% );
+  border-radius: 8px;
+  padding: 5px 15px;}
+
+QSlider:hover {
+  border: 1px solid #e0e4e7;}</string>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="15">
+         <widget class="QPushButton" name="buttonMute">
           <property name="minimumSize">
            <size>
             <width>40</width>
@@ -2333,13 +2307,80 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
-        <item row="2" column="9">
-         <widget class="QPushButton" name="buttonInstagram">
+        <item row="1" column="0" colspan="3">
+         <spacer name="horizontalSpacer_8">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="9">
+         <spacer name="horizontalSpacer_9">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="10" colspan="3">
+         <spacer name="horizontalSpacer_7">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="14">
+         <widget class="QLabel" name="labelTheme">
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+  background-color:rgba(0,0,0, 20% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>Star</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="15">
+         <widget class="QPushButton" name="buttonChangeTheme">
           <property name="minimumSize">
            <size>
             <width>40</width>
             <height>40</height>
            </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
           </property>
           <property name="styleSheet">
            <string notr="true">QPushButton {
@@ -2362,44 +2403,45 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
 }</string>
           </property>
           <property name="text">
-           <string/>
+           <string>change theme</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="7">
-         <widget class="QPushButton" name="buttonTelegram">
-          <property name="minimumSize">
+        <item row="1" column="5">
+         <spacer name="horizontalSpacer_11">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
-            <height>40</height>
+            <height>20</height>
            </size>
           </property>
+         </spacer>
+        </item>
+        <item row="0" column="14">
+         <widget class="QLabel" name="labelVolumeLevel">
+          <property name="font">
+           <font>
+            <family>Impact</family>
+           </font>
+          </property>
           <property name="styleSheet">
-           <string notr="true">QPushButton {
-color: #333;
-border: 1px solid #555;
-border-radius: 20px;
-border-style: outset;
-background: qradialgradient(
-cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
-radius: 1, stop: 0 #fff, stop: 1 #888
-);
-padding: 5px;
+           <string notr="true">QLabel {
+  background-color:rgba(0,0,0, 20% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
 }
-
-QPushButton:hover {
-background: qradialgradient(
-cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
-radius: 1.35, stop: 0 #fff, stop: 1 #bbb
-);
-}</string>
+</string>
           </property>
           <property name="text">
-           <string/>
+           <string>percent</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
+        <item row="3" column="1">
          <widget class="QPushButton" name="buttonBackFromSettings">
           <property name="minimumSize">
            <size>
@@ -2435,6 +2477,51 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
           <property name="text">
            <string>Main Menu</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="9">
+         <widget class="QPushButton" name="buttonOnlineTime">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Impact</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+color: #333;
+border: 1px solid #555;
+border-radius: 20px;
+border-style: outset;
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1, stop: 0 #fff, stop: 1 #888
+);
+padding: 5px;
+}
+
+QPushButton:hover {
+background: qradialgradient(
+cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
+radius: 1.35, stop: 0 #fff, stop: 1 #bbb
+);
+}</string>
+          </property>
+          <property name="text">
+           <string>show online time</string>
           </property>
          </widget>
         </item>
@@ -2726,28 +2813,6 @@ QComboBox::focus{
           </property>
          </spacer>
         </item>
-        <item row="0" column="0" colspan="4">
-         <widget class="QLabel" name="labelProfilePic">
-          <property name="maximumSize">
-           <size>
-            <width>226</width>
-            <height>198</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-  background-color:rgba(0,0,0, 20% );
-  border-radius: 8px;
-  padding: 5px 15px;
-  border: 1px solid #e0e4e7;
-}
-</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
         <item row="6" column="2">
          <widget class="QLabel" name="labelPassword">
           <property name="font">
@@ -2918,55 +2983,25 @@ radius: 1.35, stop: 0 #fff, stop: 1 #bbb
           </property>
          </widget>
         </item>
-        <item row="0" column="4">
-         <spacer name="horizontalSpacer_20">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
+        <item row="0" column="0" colspan="5">
+         <widget class="QLabel" name="labelProfilePic">
+          <property name="maximumSize">
            <size>
-            <width>40</width>
-            <height>20</height>
+            <width>226</width>
+            <height>198</height>
            </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="8" column="3">
-         <widget class="QPushButton" name="buttonLogOut">
-          <property name="minimumSize">
-           <size>
-            <width>40</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>Impact</family>
-            <pointsize>12</pointsize>
-           </font>
           </property>
           <property name="styleSheet">
-           <string notr="true">QPushButton {
-color: red;
-border: 1px solid #555;
-border-radius: 20px;
-border-style: outset;
-background: qradialgradient(
-cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
-radius: 1, stop: 0 #fff, stop: 1 #888
-);
-padding: 5px;
+           <string notr="true">QLabel {
+  background-color:rgba(0,0,0, 20% );
+  border-radius: 8px;
+  padding: 5px 15px;
+  border: 1px solid #e0e4e7;
 }
-
-QPushButton:hover {
-background: qradialgradient(
-cx: 0.3, cy: -0.4, fx: 0.3, fy: -0.4,
-radius: 1.35, stop: 0 #fff, stop: 1 #bbb
-);
-}</string>
+</string>
           </property>
           <property name="text">
-           <string>Log out</string>
+           <string/>
           </property>
          </widget>
         </item>

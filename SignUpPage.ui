@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>610</width>
-    <height>720</height>
+    <height>750</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>610</width>
-    <height>720</height>
+    <height>750</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -1064,7 +1064,7 @@ QLineEdit::focus{
       <enum>QLineEdit::Password</enum>
      </property>
      <property name="placeholderText">
-      <string>XXX@123</string>
+      <string/>
      </property>
     </widget>
    </item>

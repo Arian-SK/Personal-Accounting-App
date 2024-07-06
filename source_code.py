@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import * #to import every tools from QtWidgets
-from PyQt6.QtCore import QUrl, Qt, QStringListModel #to define path
+from PyQt6.QtCore import QUrl, Qt, QStringListModel, QPropertyAnimation, QRect, QSize, QEasingCurve#to define path
 from PyQt6.QtGui import QIcon, QKeySequence, QDesktopServices, QPixmap #Icon, shortcut keys, link directions, Images
 from PyQt6 import uic # for loading ui seperate from source code(qt designer)
 from PyQt6.QtMultimedia import QSoundEffect #for soundtracks
@@ -12,7 +12,7 @@ import shutil #delte account
 import pandas as pd #reading and writing excel
 from openpyxl import load_workbook #for searching
 import random # for random security question
-
+import sqlite3
 
 #finding path to project directory:
 my_path = os.path.abspath(os.path.dirname(__file__))
@@ -25,6 +25,27 @@ star_theme_path = "background-image : url(" + str(project_path) + "//resources//
 light_theme_path = "background-image : url(" + str(project_path) + "//resources//light theme" + "); background-attachment: fixed"
 dark_theme_path = "background-image : url(" + str(project_path) + "//resources//dark theme" + "); background-attachment: fixed"
 
+
+class AnimatedButton(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.setGeometry(100, 100, 400, 300)
+
+        self.button = QPushButton('Animate Me', self)
+        self.button.setGeometry(100, 100, 200, 50)
+
+        # Create the QPropertyAnimation
+        self.animation = QPropertyAnimation(self.button, b"geometry")
+        self.animation.setDuration(1000)
+        self.animation.setStartValue(QRect(100, 100, 200, 50))
+        self.animation.setEndValue(QRect(100, 200, 200, 50))
+
+        # Start the animation
+        self.animation.start()
+        
 class Sound:
     def __init__(self, name = ''):
         self.soundtracks_list = ['background music', 'Alert', 'Correct']
@@ -65,6 +86,11 @@ class MainApp(QMainWindow):
         uic.loadUi(project_path + "//MainWindow.ui", self)
         self.setWindowTitle('Personal accountant')
         self.setWindowIcon(QIcon(project_path + "//resources//main icon.ico"))
+        self.tabWidget.setTabPosition(QTabWidget.TabPosition.West)
+
+        #online time:
+        self.login_time = datetime.now()
+        self.buttonOnlineTime.clicked.connect(self.online_time)
 
         #username:
         self.lineUsername.setText(username)
@@ -196,7 +222,7 @@ class MainApp(QMainWindow):
         self.buttonInstagram.clicked.connect(self.open_link_instagram)
         self.buttonTelegram.clicked.connect(self.open_link_telegram)
         self.buttonTwitter.clicked.connect(self.open_link_twitter)
-        self.tabWidget.tabBar().hide()
+        #self.tabWidget.tabBar().hide()
         
         #exception handling:
         self.labelExceptionCategory.setVisible(False)
@@ -206,6 +232,17 @@ class MainApp(QMainWindow):
     def reinit(self):
         self.__init__()
 
+    def online_time(self):
+        self.logout_time = datetime.now()
+        onlinetime = self.logout_time - self.login_time
+        total_seconds = int(onlinetime.total_seconds())
+        hours, remainder = divmod(total_seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+
+        # Print the time difference in the format HH:MM:SS
+        QMessageBox.information(None, "online time", f" online time: \n {hours:02}:{minutes:02}:{seconds:02}")
+
+
     #profile tab:
     def load_user_profile(self):
             self.username = windowLogin.username
@@ -214,7 +251,7 @@ class MainApp(QMainWindow):
             email = str(user_row['email']).split()
             password = str(user_row['password']).split()
             fname = str(user_row['first name']).split()
-            lname = str(user_row['last name']).split()
+            lname = str(user_row['last name']).split()#problem with two part lnames
             pnumber = str(user_row['phone number']).split()
             self.email = email[1]
             self.password = password[1]
@@ -1217,7 +1254,7 @@ class SignUp(QWidget):
         if ok and self.security_answer.isalpha():
             self.labelException.setText('')
             self.play_correct()
-            self.add_memeber()
+            self.add_member()
             self.reset_inputs()
             windowSignUp.close()
             windowLogin.show()
@@ -1233,7 +1270,8 @@ class SignUp(QWidget):
         self.lineCity.setText('')
         self.labelException.setVisible(False)
 
-    def add_memeber(self):
+    def add_member(self):
+        # Get data from input fields
         fname = self.lineFname.text()
         lname = self.lineLname.text()
         pnumber = self.linePnumber.text()
@@ -1244,26 +1282,43 @@ class SignUp(QWidget):
         date = self.date
         security_answer = self.security_answer
         security_type = self.option
-        memeber_info = {'first name': [fname], 'last name': [lname], 'phone number':[pnumber], 'username':[username],
-        'email':[email], 'password':[password], 'city':[city], 'date':[date], 'security type':[security_type], 'security answer':[security_answer]}
 
-        database_path = project_path + '//database//members_info.xlsx'
+        # Connect to the database (or create it if it doesn't exist)
+        database_path = project_path + '//database//members_info.db'
+        conn = sqlite3.connect(database_path)
+        cursor = conn.cursor()
 
-        df_new = pd.DataFrame(memeber_info)
-    
-        # Read existing data
-        df_database = pd.read_excel(database_path)
-        
-        # Append new data
-        df_combined = df_database._append(df_new, ignore_index=True)
-        
-        # Save the combined data to Excel
-        df_combined.to_excel(database_path, index=False)
+        # Create the table if it doesn't exist
+        cursor.execute('''CREATE TABLE IF NOT EXISTS members_info (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            first_name TEXT,
+                            last_name TEXT,
+                            phone_number TEXT UNIQUE,
+                            username TEXT UNIQUE,
+                            email TEXT UNIQUE,
+                            password TEXT,
+                            city TEXT,
+                            date TEXT,
+                            security_type TEXT,
+                            security_answer TEXT
+                        )''')
+
+        # Insert the new member data
+        cursor.execute('''INSERT INTO members_info (
+                            first_name, last_name, phone_number, username, email, password, city, date, security_type, security_answer
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''', 
+                        (fname, lname, pnumber, username, email, password, city, date, security_type, security_answer))
+
+        # Commit the changes and close the connection
+        conn.commit()
+        conn.close()
 
     def check_fname(self):
+        self.labelException.setVisible(True)
         fname = self.lineFname.text()
         valid_fname = r'^[a-zA-Z]+$'
         if re.match(valid_fname, fname):
+            self.labelException.setVisible(False)
             self.labelException.setText('')
             self.labelFname.setStyleSheet("""
             background-color:rgba( 255, 255, 255, 10% );
@@ -1283,9 +1338,11 @@ class SignUp(QWidget):
             return False
 
     def check_lname(self):
+        self.labelException.setVisible(True)
         lname = self.lineLname.text()
         valid_lname = r'^[a-zA-Z]+$'
         if re.match(valid_lname, lname):
+            self.labelException.setVisible(False)
             self.labelException.setText('')
             self.labelLname.setStyleSheet("""
             background-color:rgba( 255, 255, 255, 10% );
@@ -1306,35 +1363,42 @@ class SignUp(QWidget):
 
     def check_pnumber(self):
         pnumber = self.linePnumber.text()
-        if pnumber.startswith('09') and pnumber.isnumeric() and len(pnumber) == 11 and pnumber :
-            self.labelException.setText('')
-            self.labelPnumber.setStyleSheet("""
-            background-color:rgba( 255, 255, 255, 10% );
-            border-radius: 8px;
-            padding: 5px 15px;
-            border: 1px solid #e0e4e7;
-        """)
-            df = pd.read_excel(project_path + '//database//members_info.xlsx')
-            if int(pnumber) in df['phone number'].values:
-                self.labelException.setText('phone number already in use')
-                self.labelPnumber.setStyleSheet("""
-                background-color:rgba( 255, 255, 255, 10% );
-                border-radius: 8px;
-                padding: 5px 15px;
-                border: 1px solid #ff0000;
-                """)
-                return False
-            else:
-                self.labelException.setText('')
-                self.labelPnumber.setStyleSheet("""
-                background-color:rgba( 255, 255, 255, 10% );
-                border-radius: 8px;
-                padding: 5px 15px;
-                border: 1px solid #e0e4e7;
-                """)
-                return True
+        self.labelException.setVisible(True)
+        if pnumber.startswith('09') and pnumber.isnumeric() and len(pnumber) == 11:
+            # Define the path to the SQLite database
+            database_path = project_path + '//database//members_info.db'
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+
+            try:
+                # Check if the phone number already exists
+                cursor.execute("SELECT * FROM members_info WHERE phone_number=?", (pnumber,))
+                if not cursor.fetchone():
+                    self.labelException.setVisible(False)
+                    self.labelException.setText('')
+                    self.labelPnumber.setStyleSheet("""
+                        background-color:rgba(255, 255, 255, 10%);
+                        border-radius: 8px;
+                        padding: 5px 15px;
+                        border: 1px solid #e0e4e7;
+                    """)
+                    conn.close()
+                    return True
+                else:
+                    self.labelException.setText('Phone number already exists')
+                    self.labelPnumber.setStyleSheet("""
+                        background-color:rgba(255, 255, 255, 10%);
+                        border-radius: 8px;
+                        padding: 5px 15px;
+                        border: 1px solid #ff0000;
+                    """)
+                    return False
+            except Exception as e:
+                print(e)
+            finally:
+                conn.close()
         else:
-            self.labelException.setText('invalid phone number')
+            self.labelException.setText('phone number should start with 09')
             self.labelPnumber.setStyleSheet("""
             background-color:rgba( 255, 255, 255, 10% );
             border-radius: 8px;
@@ -1346,6 +1410,10 @@ class SignUp(QWidget):
     def check_email(self):
         email = self.lineEmail.text()
         valid_email = r'^[a-zA-Z0-9._%+-]+@(gmail|yahoo)\.com$'
+        database_path = project_path + '//database//members_info.db'
+        conn = sqlite3.connect(database_path)
+        cursor = conn.cursor()
+        self.labelException.setVisible(True)
         if re.match(valid_email, email):
             self.labelException.setText('')
             self.labelEmail.setStyleSheet("""
@@ -1354,8 +1422,19 @@ class SignUp(QWidget):
             padding: 5px 15px;
             border: 1px solid #e0e4e7;
         """)
-            df = pd.read_excel(project_path + '//database//members_info.xlsx')
-            if email in df['email'].values:
+            cursor.execute("SELECT * FROM members_info WHERE email=?", (email,))
+            if not cursor.fetchone():
+                self.labelException.setVisible(False)
+                self.labelException.setText('')
+                self.labelEmail.setStyleSheet("""
+                background-color:rgba( 255, 255, 255, 10% );
+                border-radius: 8px;
+                padding: 5px 15px;
+                border: 1px solid #e0e4e7;
+                """)
+                conn.close()
+                return True
+            else:
                 self.labelException.setText('email already in use')
                 self.labelEmail.setStyleSheet("""
                 background-color:rgba( 255, 255, 255, 10% );
@@ -1364,15 +1443,6 @@ class SignUp(QWidget):
                 border: 1px solid #ff0000;
                 """)
                 return False
-            else:
-                self.labelException.setText('')
-                self.labelEmail.setStyleSheet("""
-                background-color:rgba( 255, 255, 255, 10% );
-                border-radius: 8px;
-                padding: 5px 15px;
-                border: 1px solid #e0e4e7;
-                """)
-                return True
         else:
             self.labelException.setText('invalid email')
             self.labelEmail.setStyleSheet("""
@@ -1400,7 +1470,7 @@ class SignUp(QWidget):
             hint_text += f'<span style="color: {color};">{condition}</span><br>'
 
         self.labelPassHint.setText(hint_text)
-        self.labelPassHint.show()
+        self.labelPassHint.setVisible(True)
 
     #clicked on password:
     def on_password_focus_in(self, event):
@@ -1429,9 +1499,11 @@ class SignUp(QWidget):
         self.on_password_focus_in(self.event)
 
     def check_password(self):
+        self.labelException.setVisible(True)
         valid_password = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$'
         password = self.linePass.text()
         if re.match(valid_password, password):
+            self.labelException.setVisible(False)
             self.labelException.setText('')
             self.labelPass.setStyleSheet("""
             background-color:rgba( 255, 255, 255, 10% );
@@ -1452,7 +1524,11 @@ class SignUp(QWidget):
     
     def check_username(self):
         username = self.lineUsername.text()
-        valid_username = r'^(?=.*[a-zA-Z])[a-zA-Z0-9-]+$'
+        valid_username = r'^(?=.*[a-zA-Z])[a-zA-Z0-9_]+$'
+        database_path = project_path + '//database//members_info.db'
+        self.labelException.setVisible(True)
+        conn = sqlite3.connect(database_path)
+        cursor = conn.cursor()
         if re.match(valid_username, username):
             self.labelException.setText('')
             self.labelUsername.setStyleSheet("""
@@ -1461,18 +1537,9 @@ class SignUp(QWidget):
             padding: 5px 15px;
             border: 1px solid #e0e4e7;
         """)
-            df = pd.read_excel(project_path + '//database//members_info.xlsx')
-            usernames_inlower = df['username'].str.lower().tolist()
-            if username.lower() in usernames_inlower:
-                self.labelException.setText('username taken')
-                self.labelUsername.setStyleSheet("""
-                background-color:rgba( 255, 255, 255, 10% );
-                border-radius: 8px;
-                padding: 5px 15px;
-                border: 1px solid #ff0000;
-                """)
-                return False
-            else:
+            cursor.execute("SELECT * FROM members_info WHERE username=?", (username,))
+            if not cursor.fetchone():
+                self.labelException.setVisible(False)
                 self.labelException.setText('')
                 self.labelUsername.setStyleSheet("""
                 background-color:rgba( 255, 255, 255, 10% );
@@ -1481,6 +1548,16 @@ class SignUp(QWidget):
                 border: 1px solid #e0e4e7;
                 """)
                 return True
+
+            else:
+                self.labelException.setText('username already taken')
+                self.labelUsername.setStyleSheet("""
+                background-color:rgba( 255, 255, 255, 10% );
+                border-radius: 8px;
+                padding: 5px 15px;
+                border: 1px solid #ff0000;
+                """)
+                return False
         else:
             self.labelException.setText("invalid username")
             self.labelUsername.setStyleSheet("""
@@ -1492,9 +1569,11 @@ class SignUp(QWidget):
             return False
 
     def confirm_password(self):
+        self.labelException.setVisible(True)
         password = self.linePass.text()
         retyped_password = self.lineConfirmPass.text()
         if retyped_password == password:
+            self.labelException.setVisible(False)
             self.labelException.setText('')
             self.labelConfirmPass.setStyleSheet("""
             background-color:rgba( 255, 255, 255, 10% );
@@ -1514,8 +1593,10 @@ class SignUp(QWidget):
             return False
                      
     def check_city(self):
+        self.labelException.setVisible(True)
         city = self.lineCity.text()
         if city in self.city_list:
+            self.labelException.setVisible(False)
             self.labelException.setText('')
             self.labelCity.setStyleSheet("""
             background-color:rgba( 255, 255, 255, 10% );
@@ -1525,7 +1606,7 @@ class SignUp(QWidget):
             """)
             return True
         else:
-            self.labelException.setText('invalid date')
+            self.labelException.setText('invalid city')
             self.labelCity.setStyleSheet("""
             background-color:rgba( 255, 255, 255, 10% );
             border-radius: 8px;
@@ -1535,10 +1616,12 @@ class SignUp(QWidget):
             return False
 
     def check_date(self):
+        self.labelException.setVisible(True)
         day = int(self.comboDay.currentText())
         month = self.comboMonth.currentText()
         year = int(self.comboYear.currentText())
         if 0 < day <= self.return_max_day(month, year):
+            self.labelException.setVisible(False)
             self.labelException.setText('')
             self.labelDate.setStyleSheet("""
             background-color:rgba( 255, 255, 255, 10% );
@@ -1640,6 +1723,7 @@ class LoginPage(QWidget):
             self.wrong_sound_isMuted = False
             self.correct_sound_isMuted = False
             SignUp.wrong_sound_isMuted = False
+
         else:
             backgroundSound.Mute(True)
             self.buttonMute.setIcon(QIcon(project_path + "//resources//mute sound.ico"))
@@ -1665,7 +1749,7 @@ class LoginPage(QWidget):
         if self.correct_sound_isMuted == False:
             self.correct_sound.Play()
 
-    def open_passForgot(self,*arg, **kwargs):
+    def open_passForgot(self, *arg, **kwargs):
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle("Recovery")
         msg_box.setText("choose a recovery option:")
@@ -1699,19 +1783,24 @@ class LoginPage(QWidget):
             return
 
         try:
-            df = pd.read_excel(project_path + '//database//members_info.xlsx')
-        except Exception as e:
-            QMessageBox.critical(self, 'File Error', f'Error loading file: {e}')
-            return
+            database_path = project_path + '//database//members_info.db'
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
 
-        user_row = df[df['username'] == username]
-        if user_row.empty:
-            QMessageBox.warning(self, 'Input Error', 'username not found.')
-        else:
-            self.username = username
-            self.security_type = user_row.iloc[0]['security type']
-            self.security_answer = user_row.iloc[0]['security answer']
-            self.check_security_answer()
+            cursor.execute("SELECT security_type, security_answer FROM members_info WHERE username=?", (username,))
+            user_row = cursor.fetchone()
+            
+            if user_row is None:
+                QMessageBox.warning(self, 'Input Error', 'Username not found.')
+            else:
+                self.username = username
+                self.security_type, self.security_answer = user_row
+                self.check_security_answer()
+        except Exception as e:
+            QMessageBox.critical(self, 'Database Error', f'Error accessing database: {e}')
+        finally:
+            conn.close()
+
     
     def check_security_answer(self):
         answer, ok = QInputDialog.getText(self, 'Answer Input', 'Enter your answer for ' + str(self.security_type) + ':')
@@ -1747,7 +1836,7 @@ class LoginPage(QWidget):
                 """)
             else:
                 self.labelException.setVisible(True)
-                self.labelException.setText('invalid username')
+                self.labelException.setText('empty username')
                 self.labelUsername.setStyleSheet("""
                 background-color:rgba( 255, 255, 255, 10% );
                 border-radius: 8px;
@@ -1796,26 +1885,40 @@ class LoginPage(QWidget):
 
     def check_login(self, username, password):
         try:
-            # Read the Excel file
-            df = pd.read_excel(project_path + '//database//members_info.xlsx')
+            # Define the path to the SQLite database
+            database_path = project_path + '//database//members_info.db'
             
-            # Check if the DataFrame has the required columns
-            if 'username' not in df.columns or 'password' not in df.columns:
+            # Connect to the database
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+
+            # Check if the table exists and has the required columns
+            cursor.execute("PRAGMA table_info(members_info)")
+            columns = [column[1] for column in cursor.fetchall()]
+            
+            if 'username' not in columns or 'password' not in columns:
                 self.labelException.setVisible(True)
                 self.labelException.setText('Corrupted database')
+                conn.close()
                 return False
-       
-            # Check if there is a matching row
-            user_row = df[(df['username'] == username) & (df['password'] == password)]
-            if not user_row.empty:
+            
+            # Query the database for the username and password
+            cursor.execute("SELECT * FROM members_info WHERE username=? AND password=?", (username, password))
+            user_row = cursor.fetchone()
+            
+            if user_row:
                 self.labelException.setText('')
+                conn.close()
                 return True
             else:
                 self.labelException.setVisible(True)
-                if username in df['username'].values():
-                    self.labelException.setText('password is incorrect (forgot your password ?)')
+                cursor.execute("SELECT username FROM members_info WHERE username=?", (username,))
+                is_string_present = cursor.fetchone() is not None
+                if is_string_present:
+                    self.labelException.setText('Password is incorrect (forgot your password?)')
                 else:
-                    self.labelException.setText('username not found (you may want to sign up)')
+                    self.labelException.setText('Username not found (you may want to sign up)')
+                conn.close()
                 return False
         except Exception as e:
             print(e)
@@ -1825,7 +1928,7 @@ class LoginPage(QWidget):
         print(self.attempts)
         self.attempts += 1
         if self.attempts == 3:
-            self.labelException.setText("max attemts reached!")
+            self.labelException.setText("max attempts reached!")
             self.stored_time1 = time.time()
             self.countdown()
 
@@ -1885,20 +1988,26 @@ class PassRecovery(QWidget):
                 self.labelException.setText('phone number not found')
 
     def check_pnumber(self):
+        conn = sqlite3.connect(database_path)
+        cursor = conn.cursor()
+        self.labelException.setVisible(True)
         pnumber = self.lineInput.text()
+        cursor.execute("SELECT * FROM members_info WHERE phone_number=?", (pnumber,))
         if pnumber.isnumeric() == False:
             return False
         else:
-            df = pd.read_excel(project_path + '//database//members_info.xlsx')
-            if int(pnumber) in df['phone number'].values:
+            if cursor.fetchone():
                 return True
             else:
                 return False
-    
+        conn.close()
+
     def check_email(self):
+        conn = sqlite3.connect(database_path)
+        cursor = conn.cursor()
         email = self.lineInput.text()
-        df = pd.read_excel(project_path + '//database//members_info.xlsx')
-        if email in df['email'].values:
+        cursor.execute("SELECT * FROM members_info WHERE email=?", (email,))
+        if cursor.fetchone():
             return True
         else:
             return False
