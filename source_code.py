@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import * #to import every tools from QtWidgets (e.g. QPushButton, QLabel ...)
-from PyQt6.QtCore import QUrl, Qt, QStringListModel  #to define path, stringmodel for viewlist ...
+from PyQt6.QtCore import QUrl, Qt, QStringListModel, pyqtSignal  #to define path, stringmodel for viewlist ...
 from PyQt6.QtGui import QIcon, QKeySequence, QDesktopServices, QPixmap #Icon, shortcut keys, link directions, Images
 from PyQt6 import uic # for loading ui seperate from source code (Qt designer)
 from PyQt6.QtMultimedia import QSoundEffect #for soundtracks
@@ -23,10 +23,29 @@ star_theme_path = "background-image : url(" + str(project_path) + "//resources//
 light_theme_path = "background-image : url(" + str(project_path) + "//resources//light theme" + "); background-attachment: fixed"
 dark_theme_path = "background-image : url(" + str(project_path) + "//resources//dark theme" + "); background-attachment: fixed"
 
+
+class HoverButton(QPushButton):
+    # Define custom signals for hover enter and leave
+    hover_enter = pyqtSignal()
+    hover_leave = pyqtSignal()
+
+    def __init__(self, *args, **kwargs):
+        super(HoverButton, self).__init__(*args, **kwargs)
+
+    def enterEvent(self, event):
+        # Emit the hover_enter signal
+        self.hover_enter.emit()
+        super(HoverButton, self).enterEvent(event)
+
+    def leaveEvent(self, event):
+        # Emit the hover_leave signal
+        self.hover_leave.emit()
+        super(HoverButton, self).leaveEvent(event)
+
 #custom sound class:
 class Sound:
     def __init__(self, name = ''):
-        self.soundtracks_list = ['background music', 'Alert', 'Correct']
+        self.soundtracks_list = ['background music', 'Alert', 'Correct', 'Click']
         self.soundtrack = QSoundEffect()
         if name == '':
             pass
@@ -68,7 +87,7 @@ class MainApp(QMainWindow):
 
         #online time:
         self.login_time = datetime.now()
-        self.buttonOnlineTime.clicked.connect(self.online_time)
+        self.buttonOnlineTime.clicked.connect(lambda: (windowLogin.play_click(), self.online_time()))
 
         #username:
         self.username = windowLogin.username
@@ -129,67 +148,67 @@ class MainApp(QMainWindow):
         #signal handling:
 
             #Main Menu:
-        self.buttonRegCost.clicked.connect(self.go_to_CostsTab)
-        self.buttonRegIncome.clicked.connect(self.go_to_IncomeTab)
-        self.buttonSettings.clicked.connect(self.go_to_SettingsTab)
-        self.buttonSearch.clicked.connect(self.go_to_SearchTab)
-        self.buttonReports.clicked.connect(self.go_to_ReportsTab)
-        self.buttonCategories.clicked.connect(self.go_to_CategoriesTab)
-        self.buttonProfile.clicked.connect(self.go_to_ProfileTab)
+        self.buttonRegCost.clicked.connect(lambda: (windowLogin.play_click(), self.go_to_CostsTab()))
+        self.buttonRegIncome.clicked.connect(lambda: (windowLogin.play_click(), self.go_to_IncomeTab()))
+        self.buttonSettings.clicked.connect(lambda: (windowLogin.play_click(), self.go_to_SettingsTab()))
+        self.buttonSearch.clicked.connect(lambda: (windowLogin.play_click(), self.go_to_SearchTab()))
+        self.buttonReports.clicked.connect(lambda: (windowLogin.play_click(), self.go_to_ReportsTab()))
+        self.buttonCategories.clicked.connect(lambda: (windowLogin.play_click(), self.go_to_CategoriesTab()))
+        self.buttonProfile.clicked.connect(lambda: (windowLogin.play_click(), self.go_to_ProfileTab()))
 
             #Profile:
         self.comboProfiles.currentIndexChanged.connect(self.set_profile_pic)
         self.load_user_profile()
         self.set_profile_pic()
-        self.buttonChange.clicked.connect(self.change_profile_details)
+        self.buttonChange.clicked.connect(lambda: (windowLogin.play_click(), self.change_profile_details()))
         self.lineEmail.setEnabled(False)
         self.linePassword.setEnabled(False)
         self.lineFname.setEnabled(False)
         self.lineLname.setEnabled(False)
         self.linePnumber.setEnabled(False)
-        self.buttonDelete.clicked.connect(self.delete_account)
-        self.buttonDeleteAllSubs.clicked.connect(self.delete_subs)
-        self.buttonLogOut.clicked.connect(self.log_out)
+        self.buttonDelete.clicked.connect(lambda: (windowLogin.play_click(), self.delete_account()))
+        self.buttonDeleteAllSubs.clicked.connect(lambda: (windowLogin.play_click(), self.delete_subs()))
+        self.buttonLogOut.clicked.connect(lambda: (windowLogin.play_click(), self.log_out()))
         
             #Income:
-        self.buttonIncomeSubmit.clicked.connect(self.check_Income_inputs)
+        self.buttonIncomeSubmit.clicked.connect(lambda: (windowLogin.play_click(), self.check_Income_inputs()))
         self.labelExceptionIncome.setVisible(False)
 
             #Categories:
-        self.buttonCategorySubmit.clicked.connect(self.addCategory)
+        self.buttonCategorySubmit.clicked.connect(lambda: (windowLogin.play_click(), self.addCategory()))
         self.update_list_view_category()
 
             #back buttons:
-        self.buttonBackFromIncome.clicked.connect(self.go_to_MainMenu)
-        self.buttonBackFromCategories.clicked.connect(self.go_to_MainMenu)
-        self.buttonBackFromProfile.clicked.connect(self.go_to_MainMenu)
-        self.buttonBackFromSettings.clicked.connect(self.go_to_MainMenu)
-        self.buttonBackFromCosts.clicked.connect(self.go_to_MainMenu)
-        self.buttonBackFromSearch.clicked.connect(self.go_to_MainMenu)
-        self.buttonBackFromReports.clicked.connect(self.go_to_MainMenu)
+        self.buttonBackFromIncome.clicked.connect(lambda: (windowLogin.play_click(), self.go_to_MainMenu()))
+        self.buttonBackFromCategories.clicked.connect(lambda: (windowLogin.play_click(), self.go_to_MainMenu()))
+        self.buttonBackFromProfile.clicked.connect(lambda: (windowLogin.play_click(), self.go_to_MainMenu()))
+        self.buttonBackFromSettings.clicked.connect(lambda: (windowLogin.play_click(), self.go_to_MainMenu()))
+        self.buttonBackFromCosts.clicked.connect(lambda: (windowLogin.play_click(), self.go_to_MainMenu()))
+        self.buttonBackFromSearch.clicked.connect(lambda: (windowLogin.play_click(),self.go_to_MainMenu()))
+        self.buttonBackFromReports.clicked.connect(lambda: (windowLogin.play_click(),self.go_to_MainMenu()))
 
             #Cost:
-        self.buttonCostSubmit.clicked.connect(self.check_Cost_inputs)
+        self.buttonCostSubmit.clicked.connect(lambda: (windowLogin.play_click(), self.check_Cost_inputs()))
         self.labelExceptionCost.setVisible(False)
 
             #Report:
         if self.username:
             self.load_incomes()
             self.load_costs()
-        self.buttonReportsSubmit.clicked.connect(self.perform_reports)
+        self.buttonReportsSubmit.clicked.connect(lambda: (windowLogin.play_click(), self.perform_reports()))
         self.buttonGroupReports = QButtonGroup()
         self.buttonGroupReports.addButton(self.radioReportsPastD)
         self.buttonGroupReports.addButton(self.radioReportsPastM)
         self.buttonGroupReports.addButton(self.radioReportsPastY)
         self.buttonGroupReports.addButton(self.radioReportsNone)
         self.radioReportsNone.setChecked(True)
-        self.buttonReportsRange.clicked.connect(self.get_integer_values2)
-        self.buttonReportsReset.clicked.connect(self.reset_reports)
+        self.buttonReportsRange.clicked.connect(lambda: (windowLogin.play_click(), self.get_integer_values2()))
+        self.buttonReportsReset.clicked.connect(lambda: (windowLogin.play_click(), self.reset_reports()))
         self.first_range1 = 0
         self.second_range2 = 0
 
             #Search:
-        self.buttonSearchSubmit.clicked.connect(self.begin_search)
+        self.buttonSearchSubmit.clicked.connect(lambda: (windowLogin.play_click(), self.begin_search()))
         self.buttonGroupSearch1 = QButtonGroup()
         self.buttonGroupSearch1.addButton(self.radioSearchIncomesOnly)
         self.buttonGroupSearch1.addButton(self.radioSearchCostsOnly)
@@ -200,20 +219,20 @@ class MainApp(QMainWindow):
         self.buttonGroupSearch2.addButton(self.radioSearchPast3)
         self.buttonGroupSearch2.addButton(self.radioSearchNone2)
         self.radioSearchNone2.setChecked(True)
-        self.buttonSearchRange.clicked.connect(self.get_integer_values)
-        self.buttonSearchReset.clicked.connect(self.reset_search)
+        self.buttonSearchRange.clicked.connect(lambda: (windowLogin.play_click(), self.get_integer_values()))
+        self.buttonSearchReset.clicked.connect(lambda: (windowLogin.play_click(), self.reset_search()))
         self.firt_range = 0
         self.second_range = 0
 
             #setting:
-        self.buttonMute.clicked.connect(windowLogin.play_mute_background)
+        self.buttonMute.clicked.connect(lambda: (windowLogin.play_click(), windowLogin.play_mute_background()))
         self.sliderVolume.valueChanged.connect(self.update_volume)
-        self.buttonChangeTheme.clicked.connect(self.change_theme)
-        self.buttonAbout.clicked.connect(self.show_message_about)
-        self.buttonDonate.clicked.connect(self.open_link_donation)
-        self.buttonInstagram.clicked.connect(self.open_link_instagram)
-        self.buttonTelegram.clicked.connect(self.open_link_telegram)
-        self.buttonTwitter.clicked.connect(self.open_link_twitter)
+        self.buttonChangeTheme.clicked.connect(lambda: (windowLogin.play_click(), self.change_theme()))
+        self.buttonAbout.clicked.connect(lambda: (windowLogin.play_click(),self.show_message_about()))
+        self.buttonDonate.clicked.connect(lambda: (windowLogin.play_click(), self.open_link_donation()))
+        self.buttonInstagram.clicked.connect(lambda: (windowLogin.play_click(), self.open_link_instagram()))
+        self.buttonTelegram.clicked.connect(lambda: (windowLogin.play_click(), self.open_link_telegram()))
+        self.buttonTwitter.clicked.connect(lambda: (windowLogin.play_click(), self.open_link_twitter()))
         #self.tabWidget.tabBar().hide()
         
         #exception handling:
@@ -238,13 +257,12 @@ class MainApp(QMainWindow):
     #profile tab:
     def load_user_profile(self):
         try:
-            self.username = windowLogin.username
             database_path = project_path + '//database//members_info.db'
             conn = sqlite3.connect(database_path)
             cursor = conn.cursor()
-            self.username = 'erfan'
             string = cursor.execute("SELECT * FROM members_info WHERE username=?", (self.username,))
             info = cursor.fetchone()
+            conn.close()
             self.email = str(info[5])
             self.password = str(info[6])
             self.fname = str(info[1])
@@ -256,7 +274,6 @@ class MainApp(QMainWindow):
             self.lineFname.setText(self.fname)
             self.lineLname.setText(self.lname)
             self.linePnumber.setText(self.pnumber)
-            conn.close()
         except TypeError:
             pass
 
@@ -295,8 +312,8 @@ class MainApp(QMainWindow):
         valid_email = r'^[a-zA-Z0-9._%+-]+@(gmail|yahoo)\.com$'
         valid_password = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$'
         valid_pnumber = r'^09\d{9}$'
-        valid_fname = r'^[a-zA-Z]+$'
-        valid_lname = r'^[a-zA-Z]+$'
+        valid_fname = r'^[a-zA-Z ]+$'
+        valid_lname = r'^[a-zA-Z ]+$'
         self.labelExceptionProfile.setText('')
         database_path = project_path + '//database//members_info.db'
         conn = sqlite3.connect(database_path)
@@ -347,6 +364,7 @@ class MainApp(QMainWindow):
         cursor.execute("SELECT * FROM members_info WHERE phone_number=?", (new_pnumber,))
         results = cursor.fetchone()
         conn.close()
+
         if new_pnumber != self.pnumber:
             if re.match(valid_pnumber, new_pnumber):
                 if results:
@@ -356,8 +374,9 @@ class MainApp(QMainWindow):
                     self.labelExceptionProfile.setVisible(False)
                     self.labelExceptionProfile.setText('')
                     self.save_changed_pnumber(new_email)
-        conn.close()
 
+        if self.labelExceptionProfile.text():
+            windowLogin.play_wrong()
         self.load_user_profile()
 
     def save_changed_email(self, new_email):
@@ -396,18 +415,19 @@ class MainApp(QMainWindow):
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No
         )
         if reply == QMessageBox.StandardButton.Yes:
-            # Delete user from database
-            with sqlite3.connect(self.db_path) as conn:
-                cursor = conn.cursor()
-                cursor.execute("DELETE FROM members_info WHERE username = ?", (self.username,))
-                conn.commit()
+            #Delete user from database
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM members_info WHERE username = ?", (self.username,))
+            conn.commit()
+            conn.close()
             
-            # Delete user's folder
+            #Delete user's folder
             user_folder_path = project_path + '//database//reports//' + self.username
             if os.path.isdir(user_folder_path):
                 shutil.rmtree(user_folder_path)
 
-            # Close current window and show login window
+            #Close current window and show login window
             windowMain.close()
             windowLogin.show()
         
@@ -434,48 +454,51 @@ class MainApp(QMainWindow):
             os.makedirs(self.user_folder_path)
 
     def make_incomes_table(self):
-        with sqlite3.connect(self.incomes_db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS Incomes (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Income REAL,
-                    Date TEXT,
-                    Source TEXT,
-                    Details TEXT,
-                    Type TEXT,
-                    submit_date TEXT
-                )
-            ''')
-            conn.commit()
+        conn = sqlite3.connect(self.incomes_db_path)
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS Incomes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Income REAL,
+                Date TEXT,
+                Source TEXT,
+                Details TEXT,
+                Type TEXT,
+                submit_date TEXT
+            )
+        ''')
+        conn.commit()
+        conn.close()
 
     def make_costs_table(self):
-        with sqlite3.connect(self.costs_db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS Costs (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Cost REAL,
-                    Date TEXT,
-                    Source TEXT,
-                    Details TEXT,
-                    Type TEXT,
-                    submit_date TEXT
-                )
-            ''')
-            conn.commit()
+        conn = sqlite3.connect(self.costs_db_path)
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS Costs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Cost REAL,
+                Date TEXT,
+                Source TEXT,
+                Details TEXT,
+                Type TEXT,
+                submit_date TEXT
+            )
+        ''')
+        conn.commit()
+        conn.close()
 
     def make_categories_table(self):
-        with sqlite3.connect(self.categories_db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS Categories (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Categories TEXT,
-                    submit_date TEXT
-                )
-            ''')
-            conn.commit()
+        conn = sqlite3.connect(self.categories_db_path)
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS Categories (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Categories TEXT,
+                submit_date TEXT
+            )
+        ''')
+        conn.commit()
+        conn.close()
     
     def reset_combo_source(self):
         default_items = ['Groceries', 'Refueling', 'Decorations', 'Installment']
@@ -490,7 +513,6 @@ class MainApp(QMainWindow):
         self.comboReportsSource.setCurrentIndex(0)
         
     def log_out(self):
-        print('logging out...')
         windowMain.close()
         windowLogin.show()
 
@@ -615,13 +637,14 @@ class MainApp(QMainWindow):
             self.IncomeDetails = self.lineIncomeDetails.text()
             self.IncomeType = self.comboIncomeType.currentText()
 
-            with sqlite3.connect(self.incomes_db_path) as conn:
-                cursor = conn.cursor()
-                cursor.execute('''
-                    INSERT INTO Incomes (Income, Date, Source, Details, Type, submit_date)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                ''', (self.Income, self.IncomeDate, self.IncomeSource, self.IncomeDetails, self.IncomeType, self.current_time))
-                conn.commit()
+            conn = sqlite3.connect(self.incomes_db_path)
+            cursor = conn.cursor()
+            cursor.execute('''
+                INSERT INTO Incomes (Income, Date, Source, Details, Type, submit_date)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (self.Income, self.IncomeDate, self.IncomeSource, self.IncomeDetails, self.IncomeType, self.current_time))
+            conn.commit()
+            conn.close()
 
         elif Type == 'cost':
             self.Cost = self.lineCost.text()
@@ -630,25 +653,27 @@ class MainApp(QMainWindow):
             self.CostDetails = self.lineCostDetails.text()
             self.CostType = self.comboCostType.currentText()
 
-            with sqlite3.connect(self.costs_db_path) as conn:
-                cursor = conn.cursor()
-                cursor.execute('''
-                    INSERT INTO Costs (Cost, Date, Source, Details, Type, submit_date)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                ''', (self.Cost, self.CostDate, self.CostSource, self.CostDetails, self.CostType, self.current_time))
-                conn.commit()
+            conn = sqlite3.connect(self.incomes_db_path)
+            cursor = conn.cursor()
+            cursor.execute('''
+                INSERT INTO Costs (Cost, Date, Source, Details, Type, submit_date)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (self.Cost, self.CostDate, self.CostSource, self.CostDetails, self.CostType, self.current_time))
+            conn.commit()
+            conn.close()
 
         elif Type == 'category':
             category = self.lineNewCategory.text()
             self.new_category = category.capitalize()
 
-            with sqlite3.connect(self.categories_db_path) as conn:
-                cursor = conn.cursor()
-                cursor.execute('''
-                    INSERT INTO Categories (Categories, submit_date)
-                    VALUES (?, ?)
-                ''', (self.new_category, self.current_time))
-                conn.commit()
+            conn = sqlite3.connect(self.incomes_db_path)
+            cursor = conn.cursor()
+            cursor.execute('''
+                INSERT INTO Categories (Categories, submit_date)
+                VALUES (?, ?)
+            ''', (self.new_category, self.current_time))
+            conn.commit()
+            conn.close()
 
         else:
             self.show_message_unsuccessful()
@@ -864,13 +889,13 @@ class MainApp(QMainWindow):
                 for row in rows:
                     results.append([f"{column_headers[i]}: {cell}" for i, cell in enumerate(row)])
         
-        with sqlite3.connect(db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-            tables = cursor.fetchall()
-            for table in tables:
-                search_table(conn, table[0])
-        
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
+        for table in tables:
+            search_table(conn, table[0])
+
         conn.close()
         return results
 
@@ -884,7 +909,7 @@ class MainApp(QMainWindow):
     #Categories tab:
     def addCategory(self):
         Category = self.lineNewCategory.text()
-        valid_category = r'^[a-zA-Z]+$'
+        valid_category = r'^[a-zA-Z ]+$'
         if Category.isalpha() and len(Category) <= 15:
             New_Category = Category.capitalize()
         else:
@@ -942,11 +967,12 @@ class MainApp(QMainWindow):
         db_path = project_path + f"//database//reports//{self.username}//Incomes.db"
         
         if os.path.exists(db_path):
-            with sqlite3.connect(db_path) as conn:
-                cursor = conn.cursor()
-                cursor.execute("SELECT * FROM Incomes")
-                incomes_list = cursor.fetchall()
-                column_headers = [description[0] for description in cursor.description]
+            conn = sqlite3.connect(self.incomes_db_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM Incomes")
+            incomes_list = cursor.fetchall()
+            column_headers = [description[0] for description in cursor.description]
+            conn.close()
 
             for income in incomes_list:
                 info = {
@@ -966,11 +992,12 @@ class MainApp(QMainWindow):
         db_path = project_path + f"//database//reports//{self.username}//Costs.db"
         
         if os.path.exists(db_path):
-            with sqlite3.connect(db_path) as conn:
-                cursor = conn.cursor()
-                cursor.execute("SELECT * FROM Costs")
-                costs_list = cursor.fetchall()
-                column_headers = [description[0] for description in cursor.description]
+            conn = sqlite3.connect(self.costs_db_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM Costs")
+            costs_list = cursor.fetchall()
+            column_headers = [description[0] for description in cursor.description]
+            conn.close()
 
             for cost in costs_list:
                 info = {
@@ -983,6 +1010,7 @@ class MainApp(QMainWindow):
                 }
                 mod_info = "\n".join(f"{key}: {value}" for key, value in info.items())
                 self.update_list_view_reports(mod_info)
+                
         else:
             return
 
@@ -1092,24 +1120,25 @@ class MainApp(QMainWindow):
 
     def read_db_to_list(self, db_path):
         try:
-            with sqlite3.connect(db_path) as conn:
-                cursor = conn.cursor()
-                cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-                tables = cursor.fetchall()
-                if not tables:
-                    print("No tables found in the database.")
-                    return None
-                table_name = tables[0][0]
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+            tables = cursor.fetchall()
+            if not tables:
+                print("No tables found in the database.")
+                return None
+            table_name = tables[0][0]
 
-                cursor.execute(f"SELECT * FROM {table_name}")
-                rows = cursor.fetchall()
-                columns = [description[0] for description in cursor.description]
+            cursor.execute(f"SELECT * FROM {table_name}")
+            rows = cursor.fetchall()
+            columns = [description[0] for description in cursor.description]
+            conn.close()
 
             data = []
             for row in rows:
                 row_list = [f"{columns[i]}: {cell}" for i, cell in enumerate(row)]
                 data.append(row_list)
-
+            conn.close()
             return data
         except Exception as e:
             print(f"Error reading database: {e}")
@@ -1193,9 +1222,9 @@ class SignUp(QWidget):
         self.labelException.setVisible(False)
 
         #signal handling:
-        self.buttonSignUp.clicked.connect(self.check)
-        self.buttonLogin.clicked.connect(self.open_login_page)
-        self.buttonMute.clicked.connect(windowLogin.play_mute_background)
+        self.buttonSignUp.clicked.connect(lambda: (windowLogin.play_click(), self.check()))
+        self.buttonLogin.clicked.connect(lambda: (windowLogin.play_click(), self.open_login_page()))
+        self.buttonMute.clicked.connect(lambda: (windowLogin.play_click(), windowLogin.play_mute_background()))
         self.lineCity.textChanged.connect(self.change_text)
         self.buttonSignUp.setShortcut("Return")
 
@@ -1214,13 +1243,15 @@ class SignUp(QWidget):
         self.wrong_sound_isMuted = False
         self.correct_sound = Sound('Correct')
         self.correct_sound_isMuted = False
+        self.click_sound = Sound('Click')
+        self.click_sound_isMuted = False
 
         #password line:
         self.linePass.textChanged.connect(self.update_labelPassHint)
         self.linePass.focusInEvent = self.on_password_focus_in
         self.linePass.focusOutEvent = self.on_password_focus_out
         self.labelPassHint.setVisible(False)
-        self.buttonToggleEcho.clicked.connect(self.toggle_echo_mode)
+        self.buttonToggleEcho.clicked.connect(lambda: (windowLogin.play_click(), self.toggle_echo_mode()))
         self.buttonToggleEcho.setIcon(QIcon(project_path + "//resources//close eye.ico"))
         
     def change_text(self):
@@ -1239,6 +1270,10 @@ class SignUp(QWidget):
     def play_correct(self):
         if self.correct_sound_isMuted == False:
             self.correct_sound.Play()
+    
+    def play_click(self):
+        if self.click_sound_isMuted == False:
+            self.click_sound.Play()
 
     #function to check inputs:
     def check(self):
@@ -1289,6 +1324,7 @@ class SignUp(QWidget):
         msg_box.exec()
 
         clicked_button = msg_box.clickedButton()
+        windowLogin.play_click()
 
         if clicked_button == option1:
             self.show_input_dialog("city")
@@ -1365,7 +1401,7 @@ class SignUp(QWidget):
     def check_fname(self):
         self.labelException.setVisible(True)
         fname = self.lineFname.text()
-        valid_fname = r'^[a-zA-Z]+$'
+        valid_fname = r'^[a-zA-Z ]+$'
         if re.match(valid_fname, fname):
             self.labelException.setVisible(False)
             self.labelException.setText('')
@@ -1389,7 +1425,7 @@ class SignUp(QWidget):
     def check_lname(self):
         self.labelException.setVisible(True)
         lname = self.lineLname.text()
-        valid_lname = r'^[a-zA-Z]+$'
+        valid_lname = r'^[a-zA-Z ]+$'
         if re.match(valid_lname, lname):
             self.labelException.setVisible(False)
             self.labelException.setText('')
@@ -1440,6 +1476,7 @@ class SignUp(QWidget):
                         padding: 5px 15px;
                         border: 1px solid #ff0000;
                     """)
+                    conn.close()
                     return False
             except Exception as e:
                 print(e)
@@ -1490,6 +1527,7 @@ class SignUp(QWidget):
                 padding: 5px 15px;
                 border: 1px solid #ff0000;
                 """)
+                conn.close()
                 return False
         else:
             self.labelException.setText('invalid email')
@@ -1595,6 +1633,7 @@ class SignUp(QWidget):
                 padding: 5px 15px;
                 border: 1px solid #e0e4e7;
                 """)
+                conn.close()
                 return True
 
             else:
@@ -1605,6 +1644,7 @@ class SignUp(QWidget):
                 padding: 5px 15px;
                 border: 1px solid #ff0000;
                 """)
+                conn.close()
                 return False
         else:
             self.labelException.setText("invalid username")
@@ -1614,6 +1654,7 @@ class SignUp(QWidget):
             padding: 5px 15px;
             border: 1px solid #ff0000;
             """)
+            conn.close()
             return False
 
     def confirm_password(self):
@@ -1748,14 +1789,16 @@ class LoginPage(QWidget):
         self.wrong_sound_isMuted = False
         self.correct_sound = Sound('Correct')
         self.correct_sound_isMuted = False
+        self.click_sound = Sound('Click')
+        self.click_sound_isMuted = False
 
         #signal handling:
         self.labelPassForgot.mousePressEvent = self.open_passForgot
-        self.buttonLogin.clicked.connect(self.check_login_input)
-        self.buttonSignUp.clicked.connect(self.open_signUp_page)
-        self.buttonMute.clicked.connect(self.play_mute_background)
+        self.buttonLogin.clicked.connect(lambda: (windowLogin.play_click(), self.check_login_input()))
+        self.buttonSignUp.clicked.connect(lambda: (windowLogin.play_click(),self.open_signUp_page()))
+        self.buttonMute.clicked.connect(lambda: (windowLogin.play_click(), self.play_mute_background()))
         self.buttonLogin.setShortcut("Return")
-        self.buttonToggleEcho.clicked.connect(self.toggle_echo_mode)
+        self.buttonToggleEcho.clicked.connect(lambda: (windowLogin.play_click(), self.toggle_echo_mode()))
         self.buttonToggleEcho.setIcon(QIcon(project_path + "//resources//close eye.ico"))
 
     def reset_inputs(self):
@@ -1770,6 +1813,7 @@ class LoginPage(QWidget):
             windowMain.buttonMute.setIcon(QIcon(project_path + "//resources//sound.ico"))
             self.wrong_sound_isMuted = False
             self.correct_sound_isMuted = False
+            self.click_sound_isMuted = False
             SignUp.wrong_sound_isMuted = False
 
         else:
@@ -1778,7 +1822,8 @@ class LoginPage(QWidget):
             windowSignUp.buttonMute.setIcon(QIcon(project_path + "//resources//mute sound.ico"))
             windowMain.buttonMute.setIcon(QIcon(project_path + "//resources//mute sound.ico"))
             self.wrong_sound_isMuted = True
-            self.correct_sound_isMuted == True
+            self.correct_sound_isMuted = True
+            self.click_sound_isMuted = True
             SignUp.wrong_sound_isMuted = True
 
     def toggle_echo_mode(self):
@@ -1796,6 +1841,10 @@ class LoginPage(QWidget):
     def play_correct(self):
         if self.correct_sound_isMuted == False:
             self.correct_sound.Play()
+    
+    def play_click(self):
+        if self.click_sound_isMuted == False:
+            self.click_sound.Play()
 
     def open_passForgot(self, *arg, **kwargs):
         msg_box = QMessageBox(self)
@@ -1808,6 +1857,7 @@ class LoginPage(QWidget):
         msg_box.exec()
 
         clicked_button = msg_box.clickedButton()
+        windowLogin.play_click()
 
         if clicked_button == option1:
             windowLogin.close()
@@ -1860,6 +1910,10 @@ class LoginPage(QWidget):
             if not ok:
                 break
         else:
+            #welcome admin:
+            if self.username == 'erfan' or self.username == 'arian':
+                QMessageBox.information(self, "Welcome Message", "Welcome Admin", QMessageBox.StandardButton.Ok)
+
             self.play_correct()
             windowLogin.close()
             self.reset_inputs()
@@ -1906,6 +1960,11 @@ class LoginPage(QWidget):
                 """)
 
                 if self.check_login(self.username, self.password):
+
+                    #welcome admin:
+                    if self.username == 'erfan' or self.username == 'arian':
+                        QMessageBox.information(self, "Welcome Message", "Welcome Admin", QMessageBox.StandardButton.Ok)
+
                     self.play_correct()
                     windowLogin.close()
                     self.reset_inputs()
@@ -2008,9 +2067,9 @@ class PassRecovery(QWidget):
 
         #signal handling:
         self.labelException.setVisible(False)
-        self.buttonVia.clicked.connect(self.send_via)
-        self.buttonBack.clicked.connect(self.go_back)
-        self.buttonSend.clicked.connect(self.check)
+        self.buttonVia.clicked.connect(lambda: (windowLogin.play_click(), self.send_via()))
+        self.buttonBack.clicked.connect(lambda: (windowLogin.play_click(), self.go_back()))
+        self.buttonSend.clicked.connect(lambda: (windowLogin.play_click(), self.check()))
 
     def send_via(self):
         self.labelException.setVisible(False)
