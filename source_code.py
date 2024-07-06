@@ -1,18 +1,16 @@
-from PyQt6.QtWidgets import * #to import every tools from QtWidgets
-from PyQt6.QtCore import QUrl, Qt, QStringListModel, QPropertyAnimation, QRect, QSize, QEasingCurve#to define path
+from PyQt6.QtWidgets import * #to import every tools from QtWidgets (e.g. QPushButton, QLabel ...)
+from PyQt6.QtCore import QUrl, Qt, QStringListModel  #to define path, stringmodel for viewlist ...
 from PyQt6.QtGui import QIcon, QKeySequence, QDesktopServices, QPixmap #Icon, shortcut keys, link directions, Images
-from PyQt6 import uic # for loading ui seperate from source code(qt designer)
+from PyQt6 import uic # for loading ui seperate from source code (Qt designer)
 from PyQt6.QtMultimedia import QSoundEffect #for soundtracks
-import sys
+import sys #to run the app
 import re #regex
 import time #cooldown
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta #time related works
 import os #to fine the path
 import shutil #delte account
-import pandas as pd #reading and writing excel
-from openpyxl import load_workbook #for searching
 import random # for random security question
-import sqlite3
+import sqlite3 #database
 
 #finding path to project directory:
 my_path = os.path.abspath(os.path.dirname(__file__))
@@ -20,32 +18,12 @@ my_path = os.path.abspath(os.path.dirname(__file__))
 #changing the path into readable form:
 project_path = my_path.replace('\\','//')
 
-#path to the background image:
+#path to the background images:
 star_theme_path = "background-image : url(" + str(project_path) + "//resources//star theme" + "); background-attachment: fixed"
 light_theme_path = "background-image : url(" + str(project_path) + "//resources//light theme" + "); background-attachment: fixed"
 dark_theme_path = "background-image : url(" + str(project_path) + "//resources//dark theme" + "); background-attachment: fixed"
 
-
-class AnimatedButton(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.initUI()
-
-    def initUI(self):
-        self.setGeometry(100, 100, 400, 300)
-
-        self.button = QPushButton('Animate Me', self)
-        self.button.setGeometry(100, 100, 200, 50)
-
-        # Create the QPropertyAnimation
-        self.animation = QPropertyAnimation(self.button, b"geometry")
-        self.animation.setDuration(1000)
-        self.animation.setStartValue(QRect(100, 100, 200, 50))
-        self.animation.setEndValue(QRect(100, 200, 200, 50))
-
-        # Start the animation
-        self.animation.start()
-        
+#custom sound class:
 class Sound:
     def __init__(self, name = ''):
         self.soundtracks_list = ['background music', 'Alert', 'Correct']
@@ -77,7 +55,7 @@ class Sound:
     def SetLoop(self, count = 1):
         self.soundtrack.setLoopCount(count)
 
-#main menu ui:
+#main menu Ui:
 class MainApp(QMainWindow):
     def __init__(self,username = ''):
         super().__init__()
@@ -93,7 +71,8 @@ class MainApp(QMainWindow):
         self.buttonOnlineTime.clicked.connect(self.online_time)
 
         #username:
-        self.lineUsername.setText(username)
+        self.username = windowLogin.username
+        self.lineUsername.setText(self.username)
         
         #background image setup:
         self.labelPic = QLabel(self)
@@ -118,6 +97,12 @@ class MainApp(QMainWindow):
 
 
         #others:
+        self.user_folder_path = project_path + f'//database//reports//{self.username}'
+        self.incomes_db_path = self.user_folder_path + '//Incomes.db'
+        self.costs_db_path = self.user_folder_path + '//Costs.db'
+        self.categories_db_path = self.user_folder_path + '//Categories.db'
+        self.ensure_user_folder_exists()
+        self.db_path = project_path + '//database//members_info.db'
         self.buttonMute.setIcon(QIcon(project_path + "//resources//sound.ico"))
         self.buttonInstagram.setIcon(QIcon(project_path + "//resources//Instagram Icon.ico"))
         self.buttonTelegram.setIcon(QIcon(project_path + "//resources//Telegram Icon.ico"))
@@ -130,8 +115,14 @@ class MainApp(QMainWindow):
         self.light_theme_on = False
         self.dark_theme_on = False
         self.star_theme_on = True
+        
+        #to prevent database not found error:
+        if self.username:
+            self.make_incomes_table()
+            self.make_costs_table()
+            self.make_categories_table()
 
-        # set initial volume value
+        #set initial volume value
         self.sliderVolume.setValue(50)
         self.update_volume(50)
 
@@ -182,8 +173,9 @@ class MainApp(QMainWindow):
         self.labelExceptionCost.setVisible(False)
 
             #Report:
-        self.load_excel_Incomes()
-        self.load_excel_Costs()
+        if self.username:
+            self.load_incomes()
+            self.load_costs()
         self.buttonReportsSubmit.clicked.connect(self.perform_reports)
         self.buttonGroupReports = QButtonGroup()
         self.buttonGroupReports.addButton(self.radioReportsPastD)
@@ -245,25 +237,28 @@ class MainApp(QMainWindow):
 
     #profile tab:
     def load_user_profile(self):
+        try:
             self.username = windowLogin.username
-            df = pd.read_excel(project_path + '//database//members_info.xlsx')
-            user_row = df[(df['username'] == self.username)]
-            email = str(user_row['email']).split()
-            password = str(user_row['password']).split()
-            fname = str(user_row['first name']).split()
-            lname = str(user_row['last name']).split()#problem with two part lnames
-            pnumber = str(user_row['phone number']).split()
-            self.email = email[1]
-            self.password = password[1]
-            self.fname = fname[1]
-            self.lname = lname[1]
-            self.pnumber = '0' + pnumber[1]
+            database_path = project_path + '//database//members_info.db'
+            conn = sqlite3.connect(database_path)
+            cursor = conn.cursor()
+            self.username = 'erfan'
+            string = cursor.execute("SELECT * FROM members_info WHERE username=?", (self.username,))
+            info = cursor.fetchone()
+            self.email = str(info[5])
+            self.password = str(info[6])
+            self.fname = str(info[1])
+            self.lname = str(info[2])
+            self.pnumber = str(info[3])
             self.lineEmail.setText(self.email)
             self.linePassword.setText(self.password)
             self.lineUsername.setText(self.username)
             self.lineFname.setText(self.fname)
             self.lineLname.setText(self.lname)
             self.linePnumber.setText(self.pnumber)
+            conn.close()
+        except TypeError:
+            pass
 
     def set_profile_pic(self):
         profile_name = self.comboProfiles.currentText()
@@ -302,11 +297,16 @@ class MainApp(QMainWindow):
         valid_pnumber = r'^09\d{9}$'
         valid_fname = r'^[a-zA-Z]+$'
         valid_lname = r'^[a-zA-Z]+$'
-        df = pd.read_excel(project_path + '//database//members_info.xlsx')
         self.labelExceptionProfile.setText('')
+        database_path = project_path + '//database//members_info.db'
+        conn = sqlite3.connect(database_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM members_info WHERE email=?", (new_email,))
+        results = cursor.fetchone()
+        conn.close()
         if new_email != self.email:
             if re.match(valid_email, new_email):
-                if new_email in df['email'].values:
+                if results:
                     self.labelExceptionProfile.setVisible(True)
                     self.labelExceptionProfile.setText('email already in use')
                 else:
@@ -341,64 +341,73 @@ class MainApp(QMainWindow):
             else:
                 self.labelExceptionProfile.setVisible(True)
                 self.labelExceptionProfile.setText(str(self.labelExceptionProfile.text()) + ' invalid lname')
-
+        
+        conn = sqlite3.connect(database_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM members_info WHERE phone_number=?", (new_pnumber,))
+        results = cursor.fetchone()
+        conn.close()
         if new_pnumber != self.pnumber:
             if re.match(valid_pnumber, new_pnumber):
-                if new_pnumber in df['phone number'].values:
+                if results:
                     self.labelExceptionProfile.setVisible(True)
                     self.labelExceptionProfile.setText(str(self.labelExceptionProfile.text()) + ' phone number already in use')
                 else:
                     self.labelExceptionProfile.setVisible(False)
                     self.labelExceptionProfile.setText('')
                     self.save_changed_pnumber(new_email)
+        conn.close()
 
         self.load_user_profile()
 
     def save_changed_email(self, new_email):
-        file_path = project_path + '//database//members_info.xlsx'
-        df = pd.read_excel(project_path + '//database//members_info.xlsx')
-        df.loc[df['username'] == self.username, 'email'] = new_email
-        df.to_excel(file_path, index=False)
-    
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE members_info SET email = ? WHERE username = ?", (new_email, self.username))
+        conn.commit()
+
     def save_changed_password(self, new_password):
-        file_path = project_path + '//database//members_info.xlsx'
-        df = pd.read_excel(project_path + '//database//members_info.xlsx')
-        df.loc[df['username'] == self.username, 'password'] = new_password
-        df.to_excel(file_path, index=False)
-    
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE members_info SET password = ? WHERE username = ?", (new_password, self.username))
+        conn.commit()
+
     def save_changed_fname(self, new_fname):
-        file_path = project_path + '//database//members_info.xlsx'
-        df = pd.read_excel(project_path + '//database//members_info.xlsx')
-        df.loc[df['username'] == self.username, 'first name'] = new_fname
-        df.to_excel(file_path, index=False)
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE members_info SET first_name = ? WHERE username = ?", (new_fname, self.username))
+        conn.commit()
 
     def save_changed_lname(self, new_lname):
-        file_path = project_path + '//database//members_info.xlsx'
-        df = pd.read_excel(project_path + '//database//members_info.xlsx')
-        df.loc[df['username'] == self.username, 'last name'] = new_lname
-        df.to_excel(file_path, index=False)
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE members_info SET last_name = ? WHERE username = ?", (new_lname, self.username))
+        conn.commit()
 
     def save_changed_pnumber(self, new_pnumber):
-        file_path = project_path + '//database//members_info.xlsx'
-        df = pd.read_excel(project_path + '//database//members_info.xlsx')
-        df.loc[df['username'] == self.username, 'phone number'] = new_pnumber
-        df.to_excel(file_path, index=False)
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE members_info SET phone_number = ? WHERE username = ?", (new_pnumber, self.username))
+        conn.commit()
 
     def delete_account(self):
         reply = QMessageBox.question(
-            self, "Delete Account", f"Are you sure you want to delete this account ?",
+            self, "Delete Account", f"Are you sure you want to delete this account?",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No
         )
         if reply == QMessageBox.StandardButton.Yes:
-            file_path = project_path + '//database//members_info.xlsx'
+            # Delete user from database
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute("DELETE FROM members_info WHERE username = ?", (self.username,))
+                conn.commit()
+            
+            # Delete user's folder
             user_folder_path = project_path + '//database//reports//' + self.username
-            df = pd.read_excel(file_path)
-            username_column = 'username'
-            user_to_delete = self.username
-            df_filtered = df[df[username_column] != user_to_delete]
-            df_filtered.to_excel(file_path, index=False)
             if os.path.isdir(user_folder_path):
                 shutil.rmtree(user_folder_path)
+
+            # Close current window and show login window
             windowMain.close()
             windowLogin.show()
         
@@ -413,27 +422,60 @@ class MainApp(QMainWindow):
                 shutil.rmtree(self.user_folder_path)
                 os_directory_path = self.user_folder_path
                 os.makedirs(os_directory_path, exist_ok=True)
-                self.make_incomes_excel()
-                self.make_costs_excel()
-                self.make_categories_excel()
+                self.make_incomes_table()
+                self.make_costs_table()
+                self.make_categories_table()
                 self.reset_combo_source()
                 self.update_list_view_reports([],0)
                 self.update_list_view_category(0)
 
-    def make_incomes_excel(self):
-        df = pd.DataFrame(columns=['Income', 'Date', 'Source', 'Details', 'Type', 'submit date'])
-        file_path = self.user_folder_path + '//Incomes.xlsx'
-        df.to_excel(file_path, index=False, engine='openpyxl')
+    def ensure_user_folder_exists(self):
+        if not os.path.exists(self.user_folder_path):
+            os.makedirs(self.user_folder_path)
 
-    def make_costs_excel(self):
-        df = pd.DataFrame(columns=['Cost', 'Date', 'Source', 'Details', 'Type', 'submit date'])
-        file_path = self.user_folder_path + '//Costs.xlsx'
-        df.to_excel(file_path, index=False, engine='openpyxl')
+    def make_incomes_table(self):
+        with sqlite3.connect(self.incomes_db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS Incomes (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Income REAL,
+                    Date TEXT,
+                    Source TEXT,
+                    Details TEXT,
+                    Type TEXT,
+                    submit_date TEXT
+                )
+            ''')
+            conn.commit()
 
-    def make_categories_excel(self):
-        df = pd.DataFrame(columns=['Categories', 'submit date'])
-        file_path = self.user_folder_path + '//Categories.xlsx'
-        df.to_excel(file_path, index=False, engine='openpyxl')
+    def make_costs_table(self):
+        with sqlite3.connect(self.costs_db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS Costs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Cost REAL,
+                    Date TEXT,
+                    Source TEXT,
+                    Details TEXT,
+                    Type TEXT,
+                    submit_date TEXT
+                )
+            ''')
+            conn.commit()
+
+    def make_categories_table(self):
+        with sqlite3.connect(self.categories_db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS Categories (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Categories TEXT,
+                    submit_date TEXT
+                )
+            ''')
+            conn.commit()
     
     def reset_combo_source(self):
         default_items = ['Groceries', 'Refueling', 'Decorations', 'Installment']
@@ -565,25 +607,21 @@ class MainApp(QMainWindow):
     def submit(self, Type):
         current_time = time.localtime()
         self.current_time = time.strftime('%Y/%m/%d', current_time)
+
         if Type == 'income':
             self.Income = self.lineIncome.text()
             self.IncomeDate = self.lineIncomeDate.text()
             self.IncomeSource = self.comboIncomeSource.currentText()
             self.IncomeDetails = self.lineIncomeDetails.text()
             self.IncomeType = self.comboIncomeType.currentText()
-            
-            info = {
-            "Income": [self.Income],
-            "Date": [self.IncomeDate],
-            "Source": [self.IncomeSource],
-            "Details": [self.IncomeDetails],
-            "Type": [self.IncomeType],
-            "submit date": [self.current_time]
-            }
-            
-            new_data = pd.DataFrame(info)
 
-            file_path = project_path + "//database//reports//" + self.username + "//incomes.xlsx"
+            with sqlite3.connect(self.incomes_db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    INSERT INTO Incomes (Income, Date, Source, Details, Type, submit_date)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ''', (self.Income, self.IncomeDate, self.IncomeSource, self.IncomeDetails, self.IncomeType, self.current_time))
+                conn.commit()
 
         elif Type == 'cost':
             self.Cost = self.lineCost.text()
@@ -592,45 +630,43 @@ class MainApp(QMainWindow):
             self.CostDetails = self.lineCostDetails.text()
             self.CostType = self.comboCostType.currentText()
 
-            info = {
-            "Cost": [self.Cost],
-            "Date": [self.CostDate],
-            "Source": [self.CostSource],
-            "Details": [self.CostDetails],
-            "Type": [self.CostType],
-            "submit date": [self.current_time]
-            }
-
-            new_data = pd.DataFrame(info)
-
-            file_path = project_path + "//database//reports//" + self.username + "//costs.xlsx"
+            with sqlite3.connect(self.costs_db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    INSERT INTO Costs (Cost, Date, Source, Details, Type, submit_date)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                ''', (self.Cost, self.CostDate, self.CostSource, self.CostDetails, self.CostType, self.current_time))
+                conn.commit()
 
         elif Type == 'category':
             category = self.lineNewCategory.text()
             self.new_category = category.capitalize()
 
-            info = {
-                "Categories": [self.new_category],
-                "submit date": [self.current_time]
-            }
-
-            new_data = pd.DataFrame(info)
-
-            file_path = project_path + "//database//reports//" + self.username + "//categories.xlsx"
+            with sqlite3.connect(self.categories_db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    INSERT INTO Categories (Categories, submit_date)
+                    VALUES (?, ?)
+                ''', (self.new_category, self.current_time))
+                conn.commit()
 
         else:
             self.show_message_unsuccessful()
-        
-        if os.path.exists(file_path):
-            existing_data = pd.read_excel(file_path)
-            updated_data = pd.concat([existing_data, new_data], ignore_index=True)
+            return
 
-        else:
-            updated_data = new_data
-        
-        updated_data.to_excel(file_path, index=False)
-        mod_info = str(info).replace('[','').replace(']','').replace("'","").replace('}','').replace('{','').replace(', ','\n')
-        self.update_list_view_reports(mod_info)
+        mod_info = {
+            "Income": self.Income if Type == 'income' else None,
+            "Cost": self.Cost if Type == 'cost' else None,
+            "Category": self.new_category if Type == 'category' else None,
+            "Date": self.IncomeDate if Type == 'income' else (self.CostDate if Type == 'cost' else None),
+            "Source": self.IncomeSource if Type == 'income' else (self.CostSource if Type == 'cost' else None),
+            "Details": self.IncomeDetails if Type == 'income' else (self.CostDetails if Type == 'cost' else None),
+            "Type": self.IncomeType if Type == 'income' else (self.CostType if Type == 'cost' else None),
+            "submit date": self.current_time
+        }
+
+        mod_info_str = "\n".join(f"{key}: {value}" for key, value in mod_info.items() if value is not None)
+        self.update_list_view_reports(mod_info_str)
         self.show_message_successful()
         self.reset_inputs()
 
@@ -693,63 +729,59 @@ class MainApp(QMainWindow):
         self.second_range = second_value
 
     def perform_search(self):
-        self.excel_path_income = project_path + '//database//reports//' + self.username + '//incomes.xlsx'
-        self.excel_path_cost = project_path + '//database//reports//' + self.username + '//costs.xlsx'
-        self.excel_path_categories = project_path + '//database//reports//' + self.username + '//categories.xlsx'
-
         self.model_3.setStringList([''])
         self.results_combined = []
 
         #None1,None2
         if self.radioSearchNone1.isChecked() and self.radioSearchNone2.isChecked():
-            if os.path.exists(self.excel_path_income):
-                self.Search(self.excel_path_income)
-            if os.path.exists(self.excel_path_cost):
-                self.Search(self.excel_path_cost)
+            if os.path.exists(self.incomes_db_path):
+                self.Search(self.incomes_db_path)
+            if os.path.exists(self.costs_db_path):
+                self.Search(self.costs_db_path)
         
         #None1,Past 24 hours
         if self.radioSearchNone1.isChecked() and self.radioSearchPast1.isChecked():
-            if os.path.exists(self.excel_path_income):
-                self.Search(self.excel_path_income, 1)
-            if os.path.exists(self.excel_path_cost):
-                self.Search(self.excel_path_cost, 1)
+            if os.path.exists(self.incomes_db_path):
+                self.Search(self.incomes_db_path, 1)
+            if os.path.exists(self.costs_db_path):
+                self.Search(self.costs_db_path, 1)
 
         #None1,Past 3 days
         if self.radioSearchNone1.isChecked() and self.radioSearchPast3.isChecked():
-            if os.path.exists(self.excel_path_income):
-                self.Search(self.excel_path_income, 3)
-            if os.path.exists(self.excel_path_cost):
-                self.Search(self.excel_path_cost, 3)
+            if os.path.exists(self.incomes_db_path):
+                self.Search(self.incomes_db_path, 3)
+            if os.path.exists(self.costs_db_path):
+                self.Search(self.costs_db_path, 3)
 
         #IncomesOnly,None2
         if self.radioSearchIncomesOnly.isChecked() and self.radioSearchNone2.isChecked():
-            if os.path.exists(self.excel_path_income):
-                self.Search(self.excel_path_income)
+            if os.path.exists(self.incomes_db_path):
+                self.Search(self.incomes_db_path)
 
         #IncomesOnly, Past 24 hours
         if self.radioSearchIncomesOnly.isChecked() and self.radioSearchPast1.isChecked():
-            if os.path.exists(self.excel_path_income):
-                self.Search(self.excel_path_income, 1)
+            if os.path.exists(self.incomes_db_path):
+                self.Search(self.incomes_db_path, 1)
         
         #IncomesOnly, Past 3 days
         if self.radioSearchIncomesOnly.isChecked() and self.radioSearchPast3.isChecked():
-            if os.path.exists(self.excel_path_income):
-                self.Search(self.excel_path_income, 3)
+            if os.path.exists(self.incomes_db_path):
+                self.Search(self.incomes_db_path, 3)
 
         #CostsOnly, None2
         if self.radioSearchCostsOnly.isChecked() and self.radioSearchNone2.isChecked():
-            if os.path.exists(self.excel_path_cost):
-                self.Search(self.excel_path_cost)
+            if os.path.exists(self.costs_db_path):
+                self.Search(self.costs_db_path)
 
         #CostsOnly, Past 24 hours
         if self.radioSearchCostsOnly.isChecked() and self.radioSearchPast1.isChecked():
-            if os.path.exists(self.excel_path_cost):
-                self.Search(self.excel_path_cost, 1)
+            if os.path.exists(self.costs_db_path):
+                self.Search(self.costs_db_path, 1)
 
         #CostsOnly, Past 3 days
         if self.radioSearchCostsOnly.isChecked() and self.radioSearchPast3.isChecked():
-            if os.path.exists(self.excel_path_cost):
-                self.Search(self.excel_path_cost, 3)
+            if os.path.exists(self.costs_db_path):
+                self.Search(self.costs_db_path, 3)
         
         self.update_list_view_search(self.results_combined)
 
@@ -758,7 +790,7 @@ class MainApp(QMainWindow):
         result = []
         if searched_string:
             #search the key word:
-            result = self.search_in_excel(file_path, searched_string)
+            result = self.search_in_database(file_path, searched_string)
             if result:
                 self.result_display = []
                 new_results = []
@@ -783,7 +815,7 @@ class MainApp(QMainWindow):
                 if self.second_range > 0:
                     for i in range(len(result)):
                         money = result[i][0].strip("'Income: ").strip("'Cost: ")
-                        if self.is_within_range(money):
+                        if self.is_within_range(int(float(money))):
                             new_results.append(result[i])
                     result = new_results
                 new_results = []
@@ -797,8 +829,7 @@ class MainApp(QMainWindow):
                     self.result_display.append("\n".join([str(row) for row in result]))
                     self.results_combined.append(self.result_display)
 
-    def is_within_range(self, money_str):
-        money = int(money_str)
+    def is_within_range(self, money):
         return self.first_range < money < self.second_range
 
     def is_within_past_days(self, date_str, past_days):
@@ -817,19 +848,31 @@ class MainApp(QMainWindow):
         # Check if difference is less than x days
         return difference < Days
 
-    def search_in_excel(self, file_path, searched_string):
-        workbook = load_workbook(file_path)
-        sheet = workbook.active
+    def search_in_database(self, db_path, search_string):
+        search_string = f"%{search_string}%"
+        results = []
 
-        search_results = []
-        column_headers = [cell.value for cell in sheet[1]]
-
-        for row in sheet.iter_rows(values_only=True):
-            if any(searched_string.lower() in str(cell).lower() for cell in row):
-                row_data = [f"{column_headers[i]}: {cell}" for i, cell in enumerate(row)]
-                search_results.append(row_data)
-
-        return search_results
+        def search_table(conn, table_name):
+            cursor = conn.cursor()
+            cursor.execute(f"PRAGMA table_info({table_name})")
+            columns = [info[1] for info in cursor.fetchall()]
+            query = f"SELECT * FROM {table_name} WHERE " + " OR ".join([f"{column} LIKE ?" for column in columns])
+            cursor.execute(query, [search_string] * len(columns))
+            rows = cursor.fetchall()
+            if rows:
+                column_headers = [description[0] for description in cursor.description]
+                for row in rows:
+                    results.append([f"{column_headers[i]}: {cell}" for i, cell in enumerate(row)])
+        
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+            tables = cursor.fetchall()
+            for table in tables:
+                search_table(conn, table[0])
+        
+        conn.close()
+        return results
 
     def update_list_view_search(self, List):
         string_list = self.model_3.stringList()
@@ -895,41 +938,50 @@ class MainApp(QMainWindow):
             string_list.append('--------------------------------------')
             self.model_2.setStringList(string_list)
 
-    def load_excel_Incomes(self):
-        file_path = project_path + "//database//reports//" + self.username + "//incomes.xlsx"
+    def load_incomes(self):
+        db_path = project_path + f"//database//reports//{self.username}//Incomes.db"
+        
+        if os.path.exists(db_path):
+            with sqlite3.connect(db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT * FROM Incomes")
+                incomes_list = cursor.fetchall()
+                column_headers = [description[0] for description in cursor.description]
 
-        if os.path.exists(file_path):
-            df = pd.read_excel(file_path)
-            incomes_list = df.values.tolist()
-            for i in range(len(incomes_list)):
+            for income in incomes_list:
                 info = {
-                "Income": [incomes_list[i][0]],
-                "Date": [incomes_list[i][1]],
-                "Source": [incomes_list[i][2]],
-                "Details": [incomes_list[i][3]],
-                "Type": [incomes_list[i][4]],
-                "submit date": [incomes_list[i][5]]
+                    "Income": income[1],
+                    "Date": income[2],
+                    "Source": income[3],
+                    "Details": income[4],
+                    "Type": income[5],
+                    "submit date": income[6]
                 }
-                mod_info = str(info).replace('[','').replace(']','').replace("'","").replace('}','').replace('{','').replace(', ','\n')
+                mod_info = "\n".join(f"{key}: {value}" for key, value in info.items())
                 self.update_list_view_reports(mod_info)
         else:
             return
 
-    def load_excel_Costs(self):
-        file_path = project_path + "//database//reports//" + self.username + "//costs.xlsx"
-        if os.path.exists(file_path):
-            df = pd.read_excel(file_path)
-            costs_list = df.values.tolist()
-            for i in range(len(costs_list)):
+    def load_costs(self):
+        db_path = project_path + f"//database//reports//{self.username}//Costs.db"
+        
+        if os.path.exists(db_path):
+            with sqlite3.connect(db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT * FROM Costs")
+                costs_list = cursor.fetchall()
+                column_headers = [description[0] for description in cursor.description]
+
+            for cost in costs_list:
                 info = {
-                "Cost": [costs_list[i][0]],
-                "Date": [costs_list[i][1]],
-                "Source": [costs_list[i][2]],
-                "Details": [costs_list[i][3]],
-                "Type": [costs_list[i][4]],
-                "submit date": [costs_list[i][5]]
+                    "Cost": cost[1],
+                    "Date": cost[2],
+                    "Source": cost[3],
+                    "Details": cost[4],
+                    "Type": cost[5],
+                    "submit date": cost[6]
                 }
-                mod_info = str(info).replace('[','').replace(']','').replace("'","").replace('}','').replace('{','').replace(', ','\n')
+                mod_info = "\n".join(f"{key}: {value}" for key, value in info.items())
                 self.update_list_view_reports(mod_info)
         else:
             return
@@ -957,28 +1009,25 @@ class MainApp(QMainWindow):
         self.second_range2 = second_value
 
     def perform_reports(self):
-        self.excel_path_income = project_path + '//database//reports//' + self.username + '//incomes.xlsx'
-        self.excel_path_cost = project_path + '//database//reports//' + self.username + '//costs.xlsx'
-        self.excel_path_categories = project_path + '//database//reports//' + self.username + '//categories.xlsx'
 
         self.model_2.setStringList([''])
         self.results_combined = []
 
         if self.radioReportsNone.isChecked():
-            self.filter_reports(self.excel_path_income)
-            self.filter_reports(self.excel_path_cost)
+            self.filter_reports(self.incomes_db_path)
+            self.filter_reports(self.costs_db_path)
 
         if self.radioReportsPastD.isChecked():
-            self.filter_reports(self.excel_path_income,'D')
-            self.filter_reports(self.excel_path_cost,'D')
+            self.filter_reports(self.incomes_db_path,'D')
+            self.filter_reports(self.costs_db_path,'D')
 
         if self.radioReportsPastM.isChecked():
-            self.filter_reports(self.excel_path_income,'M')
-            self.filter_reports(self.excel_path_cost,'M')
+            self.filter_reports(self.incomes_db_path,'M')
+            self.filter_reports(self.costs_db_path,'M')
 
         if self.radioReportsPastY.isChecked():
-            self.filter_reports(self.excel_path_income,'Y')
-            self.filter_reports(self.excel_path_cost,'Y')
+            self.filter_reports(self.incomes_db_path,'Y')
+            self.filter_reports(self.costs_db_path,'Y')
 
         self.update_list_view_reports_filtered(self.results_combined)
         
@@ -989,9 +1038,9 @@ class MainApp(QMainWindow):
             searched_string = self.comboReportsSource.currentText()
 
         if searched_string:
-            result = self.search_in_excel(file_path, searched_string)
+            result = self.search_in_database(file_path, searched_string)
         else:
-            result = self.read_excel_to_list(file_path)
+            result = self.read_db_to_list(file_path)
 
         if result:
             self.result_display = []
@@ -999,19 +1048,19 @@ class MainApp(QMainWindow):
         
             if time_range == 'D':
                 for i in range(len(result)):
-                    current_time_str = result[i][1].strip("'Date: ")
+                    current_time_str = result[i][2].strip("'Date: ")
                     if self.is_within_past_days(current_time_str, 1):
                         new_results.append(result[i])
                 result = new_results
             elif time_range == 'M':
                 for i in range(len(result)):
-                    current_time_str = result[i][1].strip("'Date: ")
+                    current_time_str = result[i][2].strip("'Date: ")
                     if self.is_within_past_days(current_time_str, 30):
                         new_results.append(result[i])
                 result = new_results
             elif time_range == 'Y':
                 for i in range(len(result)):
-                    current_time_str = result[i][1].strip("'Date: ")
+                    current_time_str = result[i][2].strip("'Date: ")
                     if self.is_within_past_days(current_time_str, 365):
                         new_results.append(result[i])
                 result = new_results
@@ -1019,8 +1068,8 @@ class MainApp(QMainWindow):
             new_results = []
             if self.second_range2 > 0:
                 for i in range(len(result)):
-                    money = result[i][0].strip("'Income: ").strip("'Cost: ")
-                    if self.is_within_range2(money):
+                    money = result[i][1].strip("'Income: ").strip("'Cost: ")
+                    if self.is_within_range2(int(float(money))):
                         new_results.append(result[i])
                 result = new_results
             
@@ -1028,7 +1077,7 @@ class MainApp(QMainWindow):
             if self.comboReportsType.currentText() != 'Type(none)':
                 Type = self.comboReportsType.currentText()
                 for i in range(len(result)):
-                    if Type in result[i][4]:
+                    if Type in result[i][5]:
                         new_results.append(result[i])
                 result = new_results
             new_results = []
@@ -1041,33 +1090,33 @@ class MainApp(QMainWindow):
                 self.result_display.append("\n".join([str(row) for row in result]))
                 self.results_combined.append(self.result_display)
 
-    def read_excel_to_list(self, file_path):
+    def read_db_to_list(self, db_path):
         try:
-            # Read the Excel file
-            df = pd.read_excel(file_path)
-            # Get column names
-            columns = list(df.columns)
-            # Initialize 2D list with column names
-            data = [columns]
-            # Iterate over each row
-            for _, row in df.iterrows():
-                # Create a list for the row
-                row_list = []
-                # Iterate over each column
-                for col in columns:
-                    # Construct element with column name and cell value
-                    element = f"{col}: {row[col]}"
-                    row_list.append(element)
-                # Append row list to the 2D list
+            with sqlite3.connect(db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+                tables = cursor.fetchall()
+                if not tables:
+                    print("No tables found in the database.")
+                    return None
+                table_name = tables[0][0]
+
+                cursor.execute(f"SELECT * FROM {table_name}")
+                rows = cursor.fetchall()
+                columns = [description[0] for description in cursor.description]
+
+            data = []
+            for row in rows:
+                row_list = [f"{columns[i]}: {cell}" for i, cell in enumerate(row)]
                 data.append(row_list)
-            data.pop(0)
+
             return data
         except Exception as e:
-            print(f"Error reading Excel file: {e}")
+            print(f"Error reading database: {e}")
             return None
 
     def is_within_range2(self, money):
-        return self.first_range1 < int(money) < self.second_range2
+        return self.first_range1 < money < self.second_range2
 
     def update_list_view_reports_filtered(self, List):
         string_list = self.model_2.stringList()
@@ -1369,7 +1418,6 @@ class SignUp(QWidget):
             database_path = project_path + '//database//members_info.db'
             conn = sqlite3.connect(database_path)
             cursor = conn.cursor()
-
             try:
                 # Check if the phone number already exists
                 cursor.execute("SELECT * FROM members_info WHERE phone_number=?", (pnumber,))
@@ -1988,6 +2036,7 @@ class PassRecovery(QWidget):
                 self.labelException.setText('phone number not found')
 
     def check_pnumber(self):
+        database_path = project_path + '//database//members_info.db'
         conn = sqlite3.connect(database_path)
         cursor = conn.cursor()
         self.labelException.setVisible(True)
@@ -2003,6 +2052,7 @@ class PassRecovery(QWidget):
         conn.close()
 
     def check_email(self):
+        database_path = project_path + '//database//members_info.db'
         conn = sqlite3.connect(database_path)
         cursor = conn.cursor()
         email = self.lineInput.text()
@@ -2011,6 +2061,7 @@ class PassRecovery(QWidget):
             return True
         else:
             return False
+        conn.close()
 
     def go_back(self):
         windowPassRecovery.close()
