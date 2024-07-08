@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import * #to import every tools from QtWidgets (e.g. QPushButton, QLabel ...)
-from PyQt6.QtCore import QUrl, Qt, QStringListModel, pyqtSignal, QPropertyAnimation, QEasingCurve, QSequentialAnimationGroup, QSize  #to define path, stringmodel for viewlist ...
+from PyQt6.QtCore import QUrl, QDate, Qt, QStringListModel, pyqtSignal, QPropertyAnimation, QEasingCurve, QSequentialAnimationGroup, QSize  #to define path, stringmodel for viewlist, animations ...
 from PyQt6.QtGui import QIcon, QKeySequence, QDesktopServices, QPixmap, QDragEnterEvent, QDropEvent #Icon, shortcut keys, link directions, Images
 from PyQt6 import uic, QtCore # for loading ui seperate from source code (Qt designer)
 from PyQt6.QtMultimedia import QSoundEffect #for soundtracks
@@ -7,9 +7,8 @@ import sys #to run the app
 import re #regex
 import time #cooldown
 from datetime import datetime, timedelta #time related works
-import os #to fine the path
-import shutil #delte account
-import random # for random security question
+import os #to find the path
+import shutil #delete account
 import sqlite3 #database
 
 #finding path to project directory:
@@ -51,12 +50,14 @@ class Sound:
             pass
         else:
             self.setSoundtrack(name)
+
     def setSoundtrack(self, name):
         if name in self.soundtracks_list:
             file_path = project_path + '//resources//' + name + '.wav'
             self.soundtrack.setSource(QUrl.fromLocalFile(file_path))
         else:
             print('soundtrack not found')
+
     def Play(self):
         self.soundtrack.play()
     
@@ -92,6 +93,14 @@ class MainApp(QMainWindow):
         #username:
         self.username = windowLogin.username
         self.lineUsername.setText(self.username)
+
+        #date:
+        self.dateIncome.setCalendarPopup(True)
+        self.dateIncome.setDate(QDate.currentDate())
+        self.dateIncome.setDisplayFormat("yyyy/MM/dd")
+        self.dateCost.setCalendarPopup(True)
+        self.dateCost.setDate(QDate.currentDate())
+        self.dateCost.setDisplayFormat("yyyy/MM/dd")
         
         #background image setup:
         self.labelPic = QLabel(self)
@@ -134,12 +143,13 @@ class MainApp(QMainWindow):
         self.light_theme_on = False
         self.dark_theme_on = False
         self.star_theme_on = True
-        
+
         #to prevent database not found error:
         if self.username:
             self.make_incomes_table()
             self.make_costs_table()
             self.make_categories_table()
+            self.load_combo_source()
 
         #set initial volume value
         self.sliderVolume.setValue(50)
@@ -178,6 +188,8 @@ class MainApp(QMainWindow):
 
             #Categories:
         self.buttonCategorySubmit.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonCategorySubmit), self.addCategory()))
+        #self.reset_combo_source()
+        
         self.update_list_view_category()
 
             #Cost:
@@ -197,6 +209,8 @@ class MainApp(QMainWindow):
         if self.username:
             self.load_incomes()
             self.load_costs()
+            self.buttonProfile.click()
+            self.buttonBackFromProfile.click()
 
         self.buttonReportsSubmit.clicked.connect(lambda: (windowLogin.play_click(), self.animate_button(self.buttonReportsSubmit), self.perform_reports()))
         self.buttonGroupReports = QButtonGroup()
@@ -296,15 +310,22 @@ class MainApp(QMainWindow):
             string = cursor.execute("SELECT * FROM members_info WHERE username=?", (self.username,))
             info = cursor.fetchone()
             conn.close()
+
             self.email = str(info[5])
             self.password = str(info[6])
             self.fname = str(info[1])
             self.lname = str(info[2])
             self.pnumber = str(info[3])
             self.pfp_path = str(info[11])
-            print(self.pfp_path)
+            self.theme_name = str(info[12])
+            self.labelLogo.setText('Hello,\n ' + self.fname + ' !')
+
             if self.pfp_path:
                 self.set_profile_pic(True)
+
+            if self.theme_name:
+                self.load_theme()
+
             self.lineEmail.setText(self.email)
             self.linePassword.setText(self.password)
             self.lineUsername.setText(self.username)
@@ -313,6 +334,10 @@ class MainApp(QMainWindow):
             self.linePnumber.setText(self.pnumber)
         except TypeError:
             pass
+    
+    def load_theme(self):
+        self.change_theme(self.theme_name)
+
 
     def set_profile_pic(self, isCostume = False):
         profile_name = self.comboProfiles.currentText()
@@ -333,7 +358,9 @@ class MainApp(QMainWindow):
         pixmap = QPixmap(profile_path)
         scaled_pixmap = pixmap.scaled(self.labelProfilePic.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
         self.labelProfilePic.setPixmap(scaled_pixmap)
+        self.labelProfilePic2.setPixmap(scaled_pixmap)
         self.labelProfilePic.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.labelProfilePic2.setAlignment(Qt.AlignmentFlag.AlignCenter)
     
     def open_file_dialog(self):
         self.pfp_path, _ = QFileDialog.getOpenFileName(self, 'Open file', '', 'All Files (*)')
@@ -567,8 +594,9 @@ class MainApp(QMainWindow):
         conn.commit()
         conn.close()
     
-    def reset_combo_source(self):
-        default_items = ['Groceries', 'Refueling', 'Decorations', 'Installment']
+    def reset_combo_source(self, user_items = []):
+        default_items = ['Groceries', 'Refueling', 'Decorations', 'Installment'] + user_items
+        print(default_items)
         self.comboIncomeSource.clear()
         self.comboIncomeSource.addItems(default_items)
         self.comboIncomeSource.setCurrentIndex(0)
@@ -578,6 +606,21 @@ class MainApp(QMainWindow):
         self.comboReportsSource.clear()
         self.comboReportsSource.addItems(default_items)
         self.comboReportsSource.setCurrentIndex(0)
+
+    def load_combo_source(self):
+        import sqlite3
+
+        conn = sqlite3.connect(self.categories_db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT Categories FROM Categories")
+        rows = cursor.fetchall()
+        self.user_items = [row[0] for row in rows]
+        conn.close()
+        print(self.user_items)
+
+        if self.username and self.user_items:
+            self.reset_combo_source(self.user_items)
+
         
     def log_out(self):
         windowMain.close()
@@ -643,15 +686,8 @@ class MainApp(QMainWindow):
             return False
 
     def check_Income_Date(self):
-        valid_Income_Date = r'^\d{4}/\d{2}/\d{2}$'  
-        if re.match(valid_Income_Date, self.lineIncomeDate.text()):
-            year, month, day = self.lineIncomeDate.text().split('/')
-            if 0 < int(day) <= 31 and 0 < int(month) <= 12:
-                return True
-            else:
-                return False
-        else:
-            return False
+        self.incomeDate = self.dateIncome.date().toString("yyyy/MM/dd")
+        return True
 
     #Cost tab:
     def check_Cost_inputs(self):
@@ -682,15 +718,8 @@ class MainApp(QMainWindow):
             return False
 
     def check_Cost_Date(self):
-        valid_Cost_Date = r'^\d{4}/\d{2}/\d{2}$'
-        if re.match(valid_Cost_Date, self.lineCostDate.text()):
-            year, month, day = self.lineCostDate.text().split('/')
-            if 0 < int(day) <= 31 and 0 < int(month) <= 12:
-                return True
-            else:
-                return False
-        else:
-            return False
+        self.costDate = self.dateCost.date().toString("yyyy/MM/dd")
+        return True
 
     #Submiting:
     def submit(self, Type):
@@ -699,7 +728,7 @@ class MainApp(QMainWindow):
 
         if Type == 'income':
             self.Income = self.lineIncome.text()
-            self.IncomeDate = self.lineIncomeDate.text()
+            self.IncomeDate = self.incomeDate
             self.IncomeSource = self.comboIncomeSource.currentText()
             self.IncomeDetails = self.lineIncomeDetails.text()
             self.IncomeType = self.comboIncomeType.currentText()
@@ -715,7 +744,7 @@ class MainApp(QMainWindow):
 
         elif Type == 'cost':
             self.Cost = self.lineCost.text()
-            self.CostDate = self.lineCostDate.text()
+            self.CostDate = self.costDate
             self.CostSource = self.comboCostSource.currentText()
             self.CostDetails = self.lineCostDetails.text()
             self.CostType = self.comboCostType.currentText()
@@ -780,10 +809,10 @@ class MainApp(QMainWindow):
 
     def reset_inputs(self):
             self.lineIncome.setText('')
-            self.lineIncomeDate.setText('')
             self.lineIncomeDetails.setText('')
+            self.dateIncome.setDate(QDate.currentDate())
             self.lineCost.setText('')
-            self.lineCostDate.setText('')
+            self.dateCost.setDate(QDate.currentDate())
             self.lineCostDetails.setText('')
 
     #search tab:
@@ -891,24 +920,30 @@ class MainApp(QMainWindow):
                 if time_range == 1:
                     for i in range(len(result)):
                         current_time_str = result[i][1].strip("'Date: ")
-                        if self.is_within_past_days(current_time_str, 1):
-                            new_results.append(result[i])
+                        valid_format = r'^\d{4}/\d{2}/\d{2}$'
+                        if re.match(valid_format, current_time_str):
+                            if self.is_within_past_days(current_time_str, 3):
+                                new_results.append(result[i])
                     result = new_results
 
                 #check if it's withing the past 3 days:
                 elif time_range == 3:
                     for i in range(len(result)):
                         current_time_str = result[i][1].strip("'Date: ")
-                        if self.is_within_past_days(current_time_str, 3):
-                            new_results.append(result[i])
+                        valid_format = r'^\d{4}/\d{2}/\d{2}$'
+                        if re.match(valid_format, current_time_str):
+                            if self.is_within_past_days(current_time_str, 3):
+                                new_results.append(result[i])
                     result = new_results
                 
                 #money range check:
                 if self.second_range > 0:
                     for i in range(len(result)):
                         money = result[i][0].strip("'Income: ").strip("'Cost: ")
-                        if self.is_within_range(int(float(money))):
-                            new_results.append(result[i])
+                        valid_number = r'^-?\d+(\.\d+)?([eE][-+]?\d+)?$'
+                        if re.match(valid_number, money):
+                            if self.is_within_range(int(float(money))):
+                                new_results.append(result[i])
                     result = new_results
                 new_results = []
 
@@ -926,6 +961,7 @@ class MainApp(QMainWindow):
 
     def is_within_past_days(self, date_str, past_days):
         #Convert string to datetime object
+        
         date_obj = datetime.strptime(date_str, "%Y/%m/%d")
         
         #Get current time
@@ -1008,7 +1044,17 @@ class MainApp(QMainWindow):
             self.model.setStringList([])
         else:
             items = [self.comboIncomeSource.itemText(i) for i in range(self.comboIncomeSource.count())]
+            items2 = [self.comboReportsSource.itemText(i) for i in range(self.comboReportsSource.count())]
+            print(items2)
             self.model.setStringList(items)
+            new_items = []
+            default_items = ['Groceries', 'Refueling', 'Decorations', 'Installment']
+            for i in items:
+                if i in default_items or i in items2:
+                    pass
+                else:
+                    new_items.append(i)
+            items = new_items
             self.comboReportsSource.addItems(items)
 
     #reports tab:
@@ -1222,25 +1268,47 @@ class MainApp(QMainWindow):
         self.model_2.setStringList(string_list)
 
     #settings:
-    def change_theme(self):
-        if self.star_theme_on:
-            self.light_theme_on = True
-            self.star_theme_on = False
-            path = light_theme_path
-            self.labelTheme.setText('Light')
+    def change_theme(self, user_theme = ''):
+        if user_theme == '':
+            if self.star_theme_on:
+                self.light_theme_on = True
+                self.star_theme_on = False
+                path = light_theme_path
+                self.theme_name = 'Light'
+                self.labelTheme.setText('Light')
 
-        elif self.light_theme_on:
-            self.light_theme_on = False
-            self.dark_theme_on = True
-            path = dark_theme_path
-            self.labelTheme.setText('Dark')
+            elif self.light_theme_on:
+                self.light_theme_on = False
+                self.dark_theme_on = True
+                path = dark_theme_path
+                self.theme_name = 'Dark'
+                self.labelTheme.setText('Dark')
 
-        elif self.dark_theme_on:
-            self.star_theme_on = True
-            self.dark_theme_on = False
-            path = star_theme_path
-            self.labelTheme.setText('Stars')
-        
+            elif self.dark_theme_on:
+                self.star_theme_on = True
+                self.dark_theme_on = False
+                path = star_theme_path
+                self.theme_name = 'Stars'
+                self.labelTheme.setText('Stars')
+            
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            cursor.execute("UPDATE members_info SET theme = ? WHERE username = ?", (self.theme_name, self.username))
+            conn.commit()
+        else:
+            if user_theme == 'Dark':
+                path = dark_theme_path
+                self.labelTheme.setText('Dark')
+
+            elif user_theme == 'Light':
+                path = light_theme_path
+                self.labelTheme.setText('Light')
+
+            else :
+                path = star_theme_path
+                self.labelTheme.setText('Star')
+
+
         self.labelPic.setStyleSheet(path)
         
     def show_message_about(self):
@@ -1297,6 +1365,7 @@ class SignUp(QWidget):
         self.buttonMute.clicked.connect(lambda: (windowLogin.play_click(), windowMain.animate_button(self.buttonMute), windowLogin.play_mute_background()))
         self.lineCity.textChanged.connect(self.change_text)
         self.buttonSignUp.setShortcut("Return")
+        self.labelTerms.mousePressEvent = self.open_terms_link
 
         #attributes:
         self.city_list = ['Tehran', 'ُSari', 'Karaj', 'Babol', 'Esfahan',
@@ -1333,6 +1402,9 @@ class SignUp(QWidget):
         city = self.lineCity.text()
         new_city = city.capitalize()
         self.lineCity.setText(new_city)
+
+    def open_terms_link(self, *arg, **kwargs):
+        QDesktopServices.openUrl(QUrl('https://www.freeprivacypolicy.com/live/ac906b41-df41-4439-b907-5c768138f3fa'))
 
     def open_login_page(self):
         windowLogin.show()
@@ -1382,9 +1454,12 @@ class SignUp(QWidget):
             return
         if self.checkBoxTerms.isChecked() == False:
             self.play_wrong()
+            self.labelException.setVisible(True)
             self.labelException.setText('you have to agree with our TOS')
             return
         else:
+            self.labelException.setText('')
+            self.labelException.setVisible(False)
             self.show_message_box()
 
     def show_message_box(self):
@@ -1460,7 +1535,8 @@ class SignUp(QWidget):
                             date TEXT,
                             security_type TEXT,
                             security_answer TEXT,
-                            profile_pic TEXT
+                            profile_pic TEXT,
+                            theme TEXT
                         )''')
 
         # Insert the new member data
@@ -1557,7 +1633,7 @@ class SignUp(QWidget):
             finally:
                 conn.close()
         else:
-            self.labelException.setText('phone number should start with 09')
+            self.labelException.setText('invalid phone number')
             self.labelPnumber.setStyleSheet("""
             background-color:rgba( 255, 255, 255, 10% );
             border-radius: 8px;
